@@ -1,2 +1,2 @@
 # Bufferiser
- Work in progress
+ Work in progress. VueJS novice.
