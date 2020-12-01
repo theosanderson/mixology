@@ -175,15 +175,18 @@ Vue.component('number', {
 Vue.component('reagent_line', {
     data: function () {
       return {
-        count: 0
+        count: 0,
+        hover: false
       }
     },
-    template: `<tr>
+    template: `<tr  @mouseover="hover = true"
+    @mouseleave="hover = false">
     <td class="number_td"><number></number></td>
     <td class="conc_td"><concentration /></td>
     <td><reagent /></td>
     <td class="needed_td"><needed_amount></needed_amount></td>
     <td class="conc_td"><mass_unit /></td>
+    <td><i v-if="hover" class="fas fa-trash trash-button" v-on:click="counter += 1"></i></td>
 
     
     </tr>

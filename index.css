@@ -135,3 +135,7 @@ tr{height:3em;}
 }
 
 h4{text-align: center;}
+
+
+.trash-button{color:gray; cursor:pointer;}
+.trash-button:hover{color:black;}
