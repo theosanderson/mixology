@@ -1,0 +1,39 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+library(jsonlite)
+synonyms = read_tsv("~/Desktop/names_3star.tsv") %>% filter(LANGUAGE == "en") 
+pairings = synonyms %>% group_by(NAME,COMPOUND_ID) %>% summarise( ) 
+
+# To be safe lets filter out any name mapped to multiple chemicals
+pairings = pairings %>% group_by(NAME) %>% summarise(n=n(), COMPOUND_ID=paste(COMPOUND_ID)) %>% filter(n==1)
+
+chem_props = read_tsv("~/Desktop/chemical_data_3star.tsv")
+
+masses <- chem_props %>% filter(TYPE=="MASS")
+masses<- masses %>% group_by(COMPOUND_ID) %>% summarise(sd=sd(CHEMICAL_DATA),n=n(), mass=CHEMICAL_DATA[1]) %>% filter(sd<1e-3 | n==1) %>% select(COMPOUND_ID,mass)
+
+masses$COMPOUND_ID=as.character(masses$COMPOUND_ID)
+with_mass = inner_join(pairings,masses) %>% select(NAME,mass)
+names(with_mass)[1]="name"
+
+output = with_mass$mass
+names(output) = with_mass$name
+write_json(output,"~/Desktop/buffer_iser/Bufferiser/masses.json",.withNames=TRUE)
+
+```
+
+Add a new chunk by clicking the *Insert Chunk* button on the toolbar or by pressing *Cmd+Option+I*.
+
+When you save the notebook, an HTML file containing the code and output will be saved alongside it (click the *Preview* button or press *Cmd+Shift+K* to preview the HTML file). 
+
+The preview shows you a rendered HTML copy of the contents of the editor. Consequently, unlike *Knit*, *Preview* does not run any R code chunks. Instead, the output of the chunk when it was last run in the editor is displayed.
+
