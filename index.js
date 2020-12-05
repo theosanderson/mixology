@@ -4,7 +4,7 @@ Vue.use(window["vue-js-modal"].default);
 masses_data = Array();
 masses_keys = [];
 question_marks = '???'
-
+precision_level=5;
 
 $.getJSON("masses.json", function (data) {
   console.log(data);
@@ -14,6 +14,43 @@ $.getJSON("masses.json", function (data) {
 
 
 });
+
+
+function round (precision, number) {
+  return parseFloat(number.toPrecision(precision))
+}
+
+
+function formatNumber (precision, number) {
+  if (typeof number === 'undefined' || number === null) return ''
+
+  if (number === 0) return '0'
+
+  const roundedValue = round(precision, number)
+  const floorValue = Math.floor(roundedValue)
+
+  const isInteger = Math.abs(floorValue - roundedValue) < Number.EPSILON
+
+  const numberOfFloorDigits = String(floorValue).length
+  const numberOfDigits = String(roundedValue).length
+
+  if (numberOfFloorDigits > precision) {
+    return String(floorValue)
+  } else {
+    const padding = isInteger ? precision - numberOfFloorDigits : precision - numberOfDigits + 1
+
+    if (padding > 0) {
+      if (isInteger) {
+        return `${String(floorValue)}.${'0'.repeat(padding)}`
+      } else {
+        return `${String(roundedValue)}${'0'.repeat(padding)}`
+      }
+    } else {
+      return String(roundedValue)
+    }
+  }
+}
+
 
 function run_thing(uid) {
   var elemDiv = document.getElementById("hidden_" + uid);
@@ -159,13 +196,13 @@ Vue.component('needed_amount', {
         mass_unit_value = masses[this.mass_unit];
         
         val =  this.final_volume * this.desired_concentration.number / mass_unit_value
-        return [Number.parseFloat(val).toPrecision(4), ""]
+        return [formatNumber(precision_level,val), ""]
       }
       else if(this.mw>0 & this.desired_concentration.type_per_litre=="moles"){
         
         mass_unit_value = masses[this.mass_unit];
         val =  this.final_volume * this.desired_concentration.number * this.mw / mass_unit_value
-        return [Number.parseFloat(val).toPrecision(4),""]
+        return [formatNumber(precision_level,val),""]
       }
       else{
         if(!this.mw){
@@ -196,18 +233,18 @@ Vue.component('needed_amount', {
         
         vol_unit_value = volumes[this.vol_unit];
         val =  this.final_volume * this.desired_concentration.number / (this.stock_concentration.number*vol_unit_value);
-        return [val,""]
+        return [formatNumber(precision_level,val),""]
       
       }
       else if(this.desired_concentration.type_per_litre=="moles" & this.stock_concentration.type_per_litre=="grams"){
         vol_unit_value = volumes[this.vol_unit];
         val =  this.final_volume * this.desired_concentration.number*this.mw / (this.stock_concentration.number*vol_unit_value);
-        return [val,""]
+        return [formatNumber(precision_level,val),""]
       }
       else if(this.desired_concentration.type_per_litre=="grams" & this.stock_concentration.type_per_litre=="moles"){
         vol_unit_value = volumes[this.vol_unit];
         val =  this.final_volume * this.desired_concentration.number / (this.stock_concentration.number*vol_unit_value*this.mw);
-        return [val,""]
+        return [formatNumber(precision_level,val),""]
       }
       else{
         return [question_marks,"error: you seem to be trying to convert between incompatible types"]
@@ -249,7 +286,12 @@ Vue.component('unit', {
       unit: "",
       
     }},
-    methods:{list_of_units(){ 
+    methods:{
+      
+      filterFunction(a, b) {
+        return a.toLowerCase().replace(" ","").startsWith(b.toLowerCase().replace(" ",""));
+      },
+      list_of_units(){ 
       if(this.type=="conc"){
           return(Object.keys(concentrations));
       }
@@ -283,7 +325,7 @@ Vue.component('unit', {
         }
     },
     template: `<div class="unit" style="display:inline-block">
-      <vue-simple-suggest
+      <vue-simple-suggest :filter="filterFunction"
       v-model="unit" :class="{invalid_unit:invalid_unit}"
       :placeholder="type+' unit'"
       :list="list_of_units()"
@@ -311,7 +353,7 @@ Vue.component('reagent', {
       masses_data : masses_data,
       reagentsList() { return masses_keys; },
       filterFunction(a, b) {
-        return a.toLowerCase().startsWith(b.toLowerCase());
+        return a.toLowerCase().replace(" ","").startsWith(b.toLowerCase().replace(" ",""));
       }
     }
   },
