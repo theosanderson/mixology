@@ -110,13 +110,16 @@ Vue.component('needed_amount', {
     
       if(this.desired_concentration.type_per_litre=="grams"){
         mass_unit_value = masses[this.mass_unit];
-        return this.final_volume * this.desired_concentration.number / mass_unit_value
+        val =  this.final_volume * this.desired_concentration.number / mass_unit_value
+        return Number.parseFloat(val).toPrecision(4)
       }
       else if(this.desired_concentration.type_per_litre=="moles"){
-        return "other"
+        mass_unit_value = masses[this.mass_unit];
+        val =  this.final_volume * this.desired_concentration.number * this.mw / mass_unit_value
+        return Number.parseFloat(val).toPrecision(4)
       }
       else{
-        return "other"
+        return "???"
       }
     }
   },
@@ -405,7 +408,7 @@ methods:{
     raw_unit(){ this.updateValue()},
     raw_number(){ this.updateValue()}
   },
-  template:`<div style="display:inline-block"><input type="number"  placeholder="vol." class="number" v-model="raw_number"></input><unit type="vol" v-model="raw_unit" />{{value}}</div>`
+  template:`<div style="display:inline-block"><input type="number"  placeholder="vol." class="number" v-model="raw_number"></input><unit type="vol" v-model="raw_unit" /></div>`
 }
 );
 
