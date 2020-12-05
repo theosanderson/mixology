@@ -31,20 +31,26 @@
         <div id="app">
             
             <buffer_header></buffer_header>
-            <reagent_header></reagent_header>    
+            `<tr>
+                <td class="number_td"></td>
+                <td class="conc_td"></td>
+                <td></td>
+                <td>Final volume: <vol_and_unit></vol_and_unit>
+                </td></td>
+                
+                </tr>  
             <div><reagent_line @deleteme="onDeleteMe" :key="uid" v-for="uid in uids" :uid="uid"></reagent_line></div>
             
  
   <br>
  
-  <p>Chosen element: {{ chosen }}</p>
   
   
 
   <button v-on:click="AddCompound()"><i class="far fa-plus-square"></i> add a compound</button>
             
 
-
+<unit type="conc" />
 
     
           </div>

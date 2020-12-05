@@ -27,21 +27,6 @@ function run_thing(uid) {
 }
 
 
-masses = ["ng", "ug", "mg", "g", "kg"]
-mol = "mol"
-volumes = ["ul", "ml", "l"]
-wbv = "% (w/v)";
-times = "X"
-
-
-masses_and_moles = masses
-masses_and_moles.push(mol)
-
-concentrations = molarities;
-concentrations.push(wbv)
-concentrations.push(times)
-
-
 //////////
 
 masses = {"g":1, "mg":1e-3, "kg":1e3, "ug":1e-6, "ng":1e-9}
@@ -99,40 +84,20 @@ concentrations["X"] = {value:1,type_per_litre:"x"}
 grams, litres, moles, x , activity_units
 */
 
-volumes.forEach(vol => masses_and_moles.forEach(mass => concentrations.push(mass + "/" + vol)
-)
-
-
-
-
-
-);
 
 console.log(concentrations);
 
-// Define a new component called button-counter
-Vue.component('number', {
-  data: function () {
-    return {
-      count: 0
-    }
-  },
-  template: '<input type="number"  placeholder="conc." class="number"></input>'
-});
 
-// Define a new component called button-counter
-Vue.component('number_vol', {
-  data: function () {
-    return {
-      count: 0
-    }
-  },
-  template: '<input type="number"  placeholder="vol." class="number"></input>'
-});
 
 
 
 Vue.component('needed_amount', {
+  props:{
+    total_volume:null,
+    concentrations:null,
+    mw:null,
+
+  },
   data: function () {
     return {
       count: 0
@@ -141,74 +106,57 @@ Vue.component('needed_amount', {
   template: '<div style="display:inline-block" class="computed">12</div>'
 });
 
-Vue.component('concentration_unit', {
-  props:{value:null},
+
+Vue.component('unit', {
+  props:{value:null,
+    type:null
+   },
   data: function () {
     return {
       unit: "",
-      concUnits() { return concentrations; }
+      
     }},
+    methods:{list_of_units(){ 
+      if(this.type=="conc"){
+          return(Object.keys(concentrations));
+      }
+      else if(this.type=="mass"){
+        return(Object.keys(masses));
+    }
+    else if(this.type=="vol"){
+      return(Object.keys(volumes));
+  }
+
+    }
+      
+
+    },
+    computed:{
+      invalid_unit(){
+        if(this.list_of_units().includes(this.unit)){
+          return false;
+        }
+        else{
+          return true;
+        }
+      }
+    },
     watch:{
         unit:function(value){
           
               this.$emit('input', value)
+              
             
         }
-    }
-
-  
-
-  ,
-  template: `<div class="unit" style="display:inline-block">
-    <vue-simple-suggest
-    v-model="unit"
-    placeholder="unit"
-    :list="concUnits"
-    :filter-by-query="true">
-  </vue-simple-suggest>
-    </div>`});
-
-
-
-Vue.component('volume_unit', {
-  data: function () {
-    return {
-
-      unit: "",
-      concUnits() { return volumes; }
-    }
-
-  }
-
-  ,
-  template: `<div class="unit" style="display:inline-block">
+    },
+    template: `<div class="unit" style="display:inline-block">
       <vue-simple-suggest
-      v-model="unit"
+      v-model="unit" :class="{invalid_unit:invalid_unit}"
       placeholder="unit"
-      :list="concUnits"
+      :list="list_of_units()"
       :filter-by-query="true">
     </vue-simple-suggest>
       </div>`});
-
-
-Vue.component('mass_unit', {
-  data: function () {
-    return {
-      unit: "",
-      concUnits() { return masses; }
-    }
-
-  }
-
-  ,
-  template: `<div class="unit" style="display:inline-block">
-        <vue-simple-suggest
-        v-model="unit"
-        placeholder="unit"
-        :list="concUnits"
-        :filter-by-query="true">
-      </vue-simple-suggest>
-        </div>`});
 
 
 
@@ -359,7 +307,7 @@ Vue.component('reagent_line', {
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit /><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="reagent_info" /><needed_amount></needed_amount><mass_unit></mass_unit><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" class="fas fa-cog weight-button"></i> &nbsp;<i class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit /><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="reagent_info" /><needed_amount></needed_amount><unit type="mass" /><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" class="fas fa-cog weight-button"></i> &nbsp;<i class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -376,39 +324,67 @@ Vue.component('conc_and_unit', {
     raw_unit : null,
     raw_number : null,
 
-    value:{number:null,unit_type:null}}
+    value:{number:null,type_per_litre:null}}
 },
 methods:{
   updateValue(){
+
+    unit_details = concentrations[this.raw_unit]
+    if(unit_details){
+
+      this.value.type_per_litre = unit_details.type_per_litre
+      this.value.number = this.raw_number * unit_details.value
+    }
+    else{
+      
+      console.log("invalid_unit")
+      this.value.number = null;
+      this.value.type_per_litre = null;
+    }
     
   }},
   watch:{
     raw_unit(){ this.updateValue()},
     raw_number(){ this.updateValue()}
-  }
+  },
   //unit_types = "g_per_litre", "litre_per_litre", "moles_per_litre"
 
-  template:`<div style="display:inline-block"><input type="number"  placeholder="conc." class="number" v-model="raw_number"></input><concentration_unit v-model="raw_unit" />{{raw_unit}}</div>`
+  template:`<div style="display:inline-block"><input type="number"  placeholder="conc." class="number" v-model="raw_number"></input><unit type="conc" v-model="raw_unit" />{{value.number}}{{value.type_per_litre}}</div>`
 }
 );
 
-Vue.component('reagent_header', {
-  data: function () {
-    return {
-      count: 0
-    }
+
+Vue.component('vol_and_unit', {
+  props:{
   },
-  template: `<tr>
-    <td class="number_td"></td>
-    <td class="conc_td"></td>
-    <td></td>
-    <td>Final volume: <number_vol></number_vol>
-    </td>
-    <td class="conc_td"><volume_unit></volume_unit></td>
+  data: function(){ return {
+    raw_unit : null,
+    raw_number : null,
+    value:null // in_litres
+  }
+},
+methods:{
+  updateValue(){
+
+    unit_details = volumes[this.raw_unit]
+    if(unit_details){
+      this.value = this.raw_number * volumes[this.raw_unit]
+    }
+    else{
+      
+      console.log("invalid_vol_unit")
+      this.value = null;
+    }
     
-    </tr>
-    `
-});
+  }},
+  watch:{
+    raw_unit(){ this.updateValue()},
+    raw_number(){ this.updateValue()}
+  },
+  template:`<div style="display:inline-block"><input type="number"  placeholder="vol." class="number" v-model="raw_number"></input><unit type="vol" v-model="raw_unit" />{{value}}</div>`
+}
+);
+
 
 
 Vue.component('buffer_header', {
