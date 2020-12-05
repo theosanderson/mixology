@@ -429,7 +429,7 @@ Vue.component('reagent_line', {
     <modal :name="'settings_modal_'+uid">
    <h3> {{displayName}}</h3>
           
-          Custom molecular mass: <input type="number"  v-model="manual_mw"  class="classic"/>
+          Custom molecular mass: <input type="number"  placeholder="0.00" v-model="manual_mw"  class="classic"/>
         </modal>
     <modal :name="'trash_modal_'+uid">
           Are you sure you want to delete  {{displayName}}?
