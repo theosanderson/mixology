@@ -27,8 +27,6 @@ function run_thing(uid) {
 }
 
 
-reagents_list = ["Tris", "Hydrochloric acid", "HEPES", "Calcium chloride"]
-molarities = ["nM", "uM", "mM", "M"]
 masses = ["ng", "ug", "mg", "g", "kg"]
 mol = "mol"
 volumes = ["ul", "ml", "l"]
@@ -42,6 +40,64 @@ masses_and_moles.push(mol)
 concentrations = molarities;
 concentrations.push(wbv)
 concentrations.push(times)
+
+
+//////////
+
+masses = {"g":1, "mg":1e-3, "kg":1e3, "ug":1e-6, "ng":1e-9}
+volumes = {"l":1, "ml":1e-3, "ul":1e-6, "nl":1e-9}
+
+concentrations = {};
+
+for (const [mass_key, mass_value] of Object.entries(masses)) {
+  for (const [vol_key, vol_value] of Object.entries(volumes)) {
+    const name = mass_key+"/"+vol_key;
+    const value = mass_value / vol_value;
+    const type_per_litre = "grams"
+    concentrations[name] = {"value": value,"type_per_litre":type_per_litre}
+  }
+}
+
+concentrations["% (w/v)"] = {value:1e-2,type_per_litre:"grams"}
+
+
+
+  for (const [vol_key, vol_value] of Object.entries(volumes)) {
+    
+    const name = "mol"+"/"+vol_key;
+    const value = 1 / vol_value;
+    const type_per_litre = "moles"
+    concentrations[name] = {"value": value,"type_per_litre":type_per_litre}
+  }
+
+  concentrations["M"] = {value:1,type_per_litre:"moles"}
+  concentrations["mM"] = {value:1e-3,type_per_litre:"moles"}
+  concentrations["uM"] = {value:1e-6,type_per_litre:"moles"}
+  concentrations["nM"] = {value:1e-9,type_per_litre:"moles"}
+
+  for (const [vol_key, vol_value] of Object.entries(volumes)) {
+    
+    const name = "units"+"/"+vol_key;
+    const value = 1 / vol_value;
+    const type_per_litre = "units"
+    concentrations[name] = {"value": value,"type_per_litre":type_per_litre}
+  }
+
+
+concentrations["% (v/v)"] = {value:1e-2,type_per_litre:"litres"}
+
+concentrations["X"] = {value:1,type_per_litre:"x"}
+
+
+
+
+
+/*# structure
+
+{"name" : {"unit_per_litre":x, "value": y}}
+
+grams, litres, moles, x , activity_units
+*/
 
 volumes.forEach(vol => masses_and_moles.forEach(mass => concentrations.push(mass + "/" + vol)
 )
@@ -86,13 +142,21 @@ Vue.component('needed_amount', {
 });
 
 Vue.component('concentration_unit', {
+  props:{value:null},
   data: function () {
     return {
       unit: "",
       concUnits() { return concentrations; }
+    }},
+    watch:{
+        unit:function(value){
+          
+              this.$emit('input', value)
+            
+        }
     }
 
-  }
+  
 
   ,
   template: `<div class="unit" style="display:inline-block">
@@ -306,14 +370,25 @@ Vue.component('reagent_line', {
 });
 
 Vue.component('conc_and_unit', {
-  props:{raw_number : null,
-  raw_unit : null},
+  props:{
+  },
   data: function(){ return {
+    raw_unit : null,
+    raw_number : null,
+
     value:{number:null,unit_type:null}}
 },
+methods:{
+  updateValue(){
+    
+  }},
+  watch:{
+    raw_unit(){ this.updateValue()},
+    raw_number(){ this.updateValue()}
+  }
   //unit_types = "g_per_litre", "litre_per_litre", "moles_per_litre"
 
-  template:`<div style="display:inline-block"><input type="number"  placeholder="conc." class="number" v-model="raw_number"></input><concentration_unit /></div>`
+  template:`<div style="display:inline-block"><input type="number"  placeholder="conc." class="number" v-model="raw_number"></input><concentration_unit v-model="raw_unit" />{{raw_unit}}</div>`
 }
 );
 
