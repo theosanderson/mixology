@@ -3,24 +3,25 @@ html, body {
     padding: 0;
     
 }
+@import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro&display=swap');
 
 input{display:inline;
 background:transparent;
 border:0;
 font-size:20px;
-font-family:serif;
+
 }
 
-.number{width:4em; text-align:right}
+*{font-family:'Source Serif Pro',serif;}
 
-.number_td{text-align:right}
-.needed_td{text-align:right; padding-right:1em;}
+
+.number{width:4em; text-align:right}
 
 .conc_td{width:4em;}
 .conc_td div div input{width:4em;}
 
 
-#app{width:100%;margin:0 auto;}
+#app{width:960px;margin:0 auto;}
 
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
@@ -40,8 +41,10 @@ tr{height:3em;}
 h4{text-align: center;}
 
 
-.trash-button{color:gray; cursor:pointer;}
-.trash-button:hover{color:black;}
+.trash-button, .change-input-type-button{color:gray; cursor:pointer;}
+.trash-button:hover,.change-input-type-button:hover{color:black;}
+
+
 
 
 .weight-button{color:gray; cursor:pointer;}
@@ -52,10 +55,10 @@ h4{text-align: center;}
 
 .possible_trash{width:3em;}
 
-div.unit{width:100px;padding-left:0.5em;}
+div.unit{width:70px;padding-left:0.5em;}
 div.reagent{width:300px;}
 
-div.reagent_line{padding-bottom:10px;}
+div.reagent_line{padding-bottom:8px; padding-top:8px; border-bottom:1px solid #DDD; }
 
 div.buttons_container{width:50px; margin-left:10px;height:20px; margin-left:20px;}
 .buttons{display:inline;}
@@ -120,12 +123,27 @@ border: 1px solid #aaa;
 	color: #fff;
   }
 
-  ::placeholder{color:#888;}
+  ::placeholder{color:blue;}
 
   div.measuring_tape{font-size:20px;}
 
-  .mw{position:absolute; left:50px;top:5px;font-size:0.7em;color:gray;padding-top:5px; padding-left:35px;}
+  .mw{position:absolute; left:50px;top:5px;font-size:0.7em;color:gray;padding-top:5px; padding-left:15px;}
 
   .classic{border:1px solid gray;}
 
   .invalid_unit div input{color:red}
+
+  .number{width:50px}
+
+  .unit_input div input:placeholder-shown{font-size:15px;}
+
+
+  .needed_number{width:100px; text-align: right; display:inline-block}
+
+  input.buffer_name{width:350px; margin-left:5px;}
+
+
+  .header_container{position:relative; height:40px;}
+  .header1{font-size:20px; position:absolute;left:0px;}
+  .header2{font-size:20px; position:absolute;left:400px;}
+  .button_holder_flask{display:inline-block; width:40px; text-align: center;}

@@ -17,7 +17,9 @@
  
 <!-- CSS -->
 <link rel="stylesheet" href="https://unpkg.com/vue-simple-suggest/dist/stylesa.css">
- 
+<link rel="preconnect" href="https://fonts.gstatic.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro&display=swap" rel="stylesheet">
+
 <!-- If you need polyfills, use IIFE verision below -->
 <!-- IIFE build includes ALL polyfills: Object.assign, Promises, Generators, Async/Await!
 <script type="text/javascript" src="https://unpkg.com/vue-simple-suggest/dist/iife.js"></script>
@@ -30,15 +32,16 @@
        
         <div id="app">
             
-            <buffer_header></buffer_header>
-            `<tr>
-                <td class="number_td"></td>
-                <td class="conc_td"></td>
-                <td></td>
-                <td>Final volume: <vol_and_unit v-model="final_volume"></vol_and_unit>
-                </td></td>
+            <h3>mixology</h3>
+            <p>Recipe for <vol_and_unit v-model="final_volume"></vol_and_unit> of <input placeholder="buffer name" class="buffer_name"/></p>
+            
+
+            <hr />
+
+            
+
+
                 
-                </tr>  
             <div><reagent_line :final_volume="final_volume" @deleteme="onDeleteMe" :key="uid" v-for="uid in uids" :uid="uid"></reagent_line></div>
             
  
@@ -47,7 +50,7 @@
   
   
 
-  <button v-on:click="AddCompound()"><i class="far fa-plus-square"></i> add a compound</button>
+  <button :disabled="final_volume==null" v-on:click="AddCompound()"><i class="far fa-plus-square"></i> add a compound</button>
             
 
 </div>

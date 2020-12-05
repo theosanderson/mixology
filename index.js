@@ -30,7 +30,7 @@ function run_thing(uid) {
 //////////
 
 masses = {"g":1, "mg":1e-3, "kg":1e3, "ug":1e-6, "ng":1e-9}
-volumes = {"l":1, "ml":1e-3, "ul":1e-6, "nl":1e-9}
+volumes = {"l":1, "ml":1e-3, "ul":1e-6, "nl":1e-9, "litres":1, "litre":1}
 
 concentrations = {};
 
@@ -100,20 +100,55 @@ Vue.component('needed_amount', {
   ,
   data: function () {
     return {
-      mass_unit:null,
-      count: 0
+      mass_unit:"",
+      count: 0,
+      chosen_input_method : 'weight',
+      vol_unit:"",
+      stock_concentration:{number:null, type_per_litre:null}
     }
   },
+  methods:{toggleType(){
+    if(this.chosen_input_method=="weight"){
+      this.chosen_input_method = "volume"
+      this.vol_unit = ""
+    }
+    else{
+      this.chosen_input_method="weight"
+      this.mass_unit = ""
+    }
+  }},
+
   computed:
   {
-    needed_amount(){
+    available_input_methods: function(){
+      if(this.desired_concentration.type_per_litre=="grams"){
+        return ["weight", "volume"]
+      }
+      else if(this.desired_concentration.type_per_litre=="litres"){
+        return [ "volume"]
+      }
+      else if(this.desired_concentration.type_per_litre=="moles"){
+        if(this.mw){
+          return ["weight", "volume"]
+        }
+        else{
+          return ['volume']
+        }
+      }
+      else{
+        return [];
+      }
+
+    },
+
+    needed_amount_mass(){
     
       if(this.desired_concentration.type_per_litre=="grams"){
         mass_unit_value = masses[this.mass_unit];
         val =  this.final_volume * this.desired_concentration.number / mass_unit_value
         return Number.parseFloat(val).toPrecision(4)
       }
-      else if(this.desired_concentration.type_per_litre=="moles"){
+      else if(this.mw>0 & this.desired_concentration.type_per_litre=="moles"){
         mass_unit_value = masses[this.mass_unit];
         val =  this.final_volume * this.desired_concentration.number * this.mw / mass_unit_value
         return Number.parseFloat(val).toPrecision(4)
@@ -121,9 +156,52 @@ Vue.component('needed_amount', {
       else{
         return "???"
       }
+    },
+    needed_amount_volume(){
+      if(this.desired_concentration.type_per_litre==this.stock_concentration.type_per_litre){
+        
+        vol_unit_value = volumes[this.vol_unit];
+        val =  this.final_volume * this.desired_concentration.number / (this.stock_concentration.number*vol_unit_value);
+        return val
+      
+      }
+      else if(this.desired_concentration.type_per_litre=="moles" & this.stock_concentration.type_per_litre=="grams"){
+        vol_unit_value = volumes[this.vol_unit];
+        val =  this.final_volume * this.desired_concentration.number*this.mw / (this.stock_concentration.number*vol_unit_value);
+        return val
+      }
+      else if(this.desired_concentration.type_per_litre=="grams" & this.stock_concentration.type_per_litre=="moles"){
+        vol_unit_value = volumes[this.vol_unit];
+        val =  this.final_volume * this.desired_concentration.number / (this.stock_concentration.number*vol_unit_value*this.mw);
+        return val
+      }
+      else{
+        return "???"
+      }
+   
+  
+
+
+    },
+    input_type_button_image(){
+      if(this.chosen_input_method=="weight"){
+          return "fa-balance-scale-right";
+      }
+      else{
+        return "fa-flask";
+      }
     }
+
   },
-  template: '<div style="display:inline-block" class="computed">{{needed_amount}}<unit type="mass" v-model="mass_unit"/></div>'
+  template: `<div style="display:inline-block" class="computed">
+  <div class="button_holder_flask"><i title="Toggle between weight and volume mode" class="fas change-input-type-button" :class="input_type_button_image" v-on:click="toggleType()"></i></div>
+  <div style="display:inline-block" class="weight_input" v-if="chosen_input_method=='weight'">
+  <div class="needed_number">{{needed_amount_mass}}</div><unit type="mass"  v-model="mass_unit"/>
+  </div>
+  <div style="display:inline-block" class="weight_input" v-if="chosen_input_method=='volume'">
+  <div class="needed_number">{{needed_amount_volume}}</div><unit type="vol"  v-model="vol_unit"/> of <conc_and_unit v-model="stock_concentration" /> stock
+  </div>
+  </div>`
 });
 
 
@@ -172,9 +250,9 @@ Vue.component('unit', {
     template: `<div class="unit" style="display:inline-block">
       <vue-simple-suggest
       v-model="unit" :class="{invalid_unit:invalid_unit}"
-      placeholder="unit"
+      :placeholder="type+' unit'"
       :list="list_of_units()"
-      :filter-by-query="true">
+      :filter-by-query="true" class="unit_input">
     </vue-simple-suggest>
       </div>`});
 
@@ -252,7 +330,7 @@ Vue.component('reagent', {
           :filter="filterFunction"
           :filter-by-query="true">
           <div class="mw" v-if="mw != null" :id="'mw_'+uid">(MW: {{mw}})</div>
-          <input placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
+          <input autocomplete="off" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
           <div :id="'hidden_'+uid" style="width: auto;
           display: inline-block;
           visibility: hidden;
@@ -315,20 +393,14 @@ Vue.component('reagent_line', {
     @mouseleave="hover = false">
     <modal :name="'settings_modal_'+uid">
    <h3> {{displayName}}</h3>
-          Stock of this chemical:
-          <select>
-          <option>Pure (to be weighed)</option>
-          <option>In solution</option>
-          </select>
-
-          <br />
+          
           Custom molecular mass: <input type="number"  v-model="manual_mw"  class="classic"/>
         </modal>
     <modal :name="'trash_modal_'+uid">
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="reagent_info" /><needed_amount :mw="reagent_info.mw" :final_volume="final_volume" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" class="fas fa-cog weight-button"></i> &nbsp;<i class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="reagent_info" /><needed_amount :mw="reagent_info.mw" :final_volume="final_volume" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -431,7 +503,7 @@ Vue.component('buffer_header', {
 
 var data = {
   counter: 3,
-  uids: ['a', 'b', 'c'],
+  uids: ['a','b','c'],
   model: '',
   chosen: '',
   final_volume:null,
