@@ -190,15 +190,15 @@ Vue.component('needed_amount', {
 
     needed_amount_mass() {
       if (!this.final_volume) {
-        return [question_marks, "Unable to calculate the required content: please enter a valid total volume above"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid total volume above"]
       }
 
       if (masses[this.content.mass_unit] == undefined) {
-        return [question_marks, "Unable to calculate the required content: please enter a valid mass unit to the right (e.g. mg)"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid mass unit to the right (e.g. mg)"]
       }
 
       if (!this.desired_concentration.number) {
-        return [question_marks, "Unable to calculate the required content: please enter a valid desired concentration"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid desired concentration"]
       }
       if (this.desired_concentration.type_per_litre == "grams") {
 
@@ -217,24 +217,24 @@ Vue.component('needed_amount', {
         if (!this.mw) {
           return [question_marks, mw_message]
         }
-        return [question_marks, "Unable to calculate the required content: you seem to be trying to convert between incompatible types"]
+        return [question_marks, "Unable to calculate the required value: you seem to be trying to convert between incompatible types"]
       }
     },
     needed_amount_volume() {
       if (!this.final_volume) {
-        return [question_marks, "Unable to calculate the required content: please enter a valid total volume above"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid total volume above"]
       }
 
       if (volumes[this.content.vol_unit] == undefined) {
-        return [question_marks, "Unable to calculate the required content: please enter a valid volume unit to the right (e.g. ml)"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid volume unit to the right (e.g. ml)"]
       }
 
       if (!this.desired_concentration.number) {
-        return [question_marks, "Unable to calculate the required content: please enter a valid desired concentration"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid desired concentration"]
       }
 
       if (!this.content.stock_concentration.number) {
-        return [question_marks, "Unable to calculate the required content: please enter a valid stock concentration to the right"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid stock concentration to the right"]
       }
 
 
