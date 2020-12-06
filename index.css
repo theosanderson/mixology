@@ -38,9 +38,14 @@ input {
 		min-width:320px;
 		width:auto;
 		
+		
 	}
+	.reagent{width:220px !important;}
+	.needed_number{width:50px !important;}
+	.phone_warning{display:block !important; color:#777}
   }
 
+  .phone_warning{display:none}
 /* Chrome, Safari, Edge, Opera */
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
