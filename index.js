@@ -1,4 +1,4 @@
-
+﻿
 Vue.use(window["vue-js-modal"].default);
 
 masses_data = Array();
@@ -517,7 +517,7 @@ Vue.component('reagent_line', {
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="reagent_info" /><needed_amount :mw="reagent_info.mw" :final_volume="final_volume" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="reagent_info" /><needed_amount :mw="reagent_info.mw" :final_volume="final_volume.computed_value_in_litres" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -577,21 +577,23 @@ Vue.component('vol_and_unit', {
     return {
       raw_unit: null,
       raw_number: null,
-      value: null // in_litres
+      value: {raw_unit:null, raw_number:null, computed_value_in_litres:null} // in_litres
     }
   },
   methods: {
     updateValue() {
+      this.value.raw_unit = this.raw_unit
+      this.value.raw_number = this.raw_number
 
       unit_details = volumes[this.raw_unit]
       if (unit_details) {
-        this.value = this.raw_number * volumes[this.raw_unit]
+        this.value.computed_value_in_litres = this.raw_number * volumes[this.raw_unit]
         this.$emit('input', this.value)
       }
       else {
 
         console.log("invalid_vol_unit")
-        this.value = null;
+        this.value.computed_value_in_litres = null;
         this.$emit('input', this.value)
       }
 
@@ -629,7 +631,7 @@ var data = {
   about_open: false,
   video_open:false,
   chosen: '',
-  final_volume: null,
+  final_volume: {computed_value_in_litres:null},
 
   message: 'Hello Vue!',
 
@@ -651,7 +653,7 @@ var app = new Vue({
   data: data,
   computed: {
     compoundTitle() {
-      if (this.final_volume == null) {
+      if (this.final_volume.computed_value_in_litres == null) {
         return "First, please enter a final volume above, with a unit"
       }
       else {
