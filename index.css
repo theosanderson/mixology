@@ -33,13 +33,7 @@ input {
 	margin: 0 auto;
 }
 
-@media screen and (max-width: 500px) {
-	#app {
-		width:870px !important;
-		
-		
-	}
-}
+
 /*
 @media screen and (max-width: 500px) {
 	#app {
