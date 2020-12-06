@@ -609,7 +609,6 @@ Vue.component('vol_and_unit', {
 
 
 
-
 var data = {
   buffer_name:"test buffer",
   counter: 4,
@@ -618,7 +617,8 @@ var data = {
   about_open: false,
   video_open:false,
   chosen: '',
-  final_volume: {computed_value_in_litres:null},
+  test:'',
+  final_volume: {raw_number:null,raw_unit:null,computed_value_in_litres:null},
 
   onDeleteMe(x) {
     console.log(this)
@@ -638,11 +638,20 @@ var data = {
 
 }
 
+var urlParams = new URLSearchParams(window.location.search);
+json =   urlParams.get('data')
+console.log(json)
 
-data.final_volume.raw_number = 10
-data.final_volume.raw_unit = "ml"
+var new_data = false;
 
-data.final_volume.raw_unit = "ml"
+if(json){
+  console.log("woo")
+  new_data = JSON.parse(json)
+  console.log(new_data)
+  
+
+}
+
 
 
 var app;
@@ -666,15 +675,15 @@ app = new Vue({
     }
   },
   methods: {
+    Permalink(){
+      to_store = {"final_vol":data.final_volume, "buffer_name":data.buffer_name, "reagents_store":data.reagents_store};
+      json = JSON.stringify(to_store)
+      encoded = encodeURIComponent(json)
+      data.test = "/?data="+encoded
+    }
 
 
-    simpleSuggestionList() {
-      return [
-        'Vue.js',
-        'React.js',
-        'Angular.js'
-      ]
-    },
+    ,
     AddCompound() {
       window.onbeforeunload = function () {
         return true;
@@ -698,5 +707,12 @@ app = new Vue({
   }
 
 });
+
+if(false){
+  data.final_volume = new_data['final_volume']
+data.buffer_name = new_data['buffer_name']
+data.reagents_store = new_data['reagents_store']
+     
+}
 
 }

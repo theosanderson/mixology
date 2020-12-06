@@ -93,6 +93,10 @@
         <button :disabled="final_volume.computed_value_in_litres==null" class="ttip" :title="compoundTitle" v-on:click="AddCompound()"><i
                 class="far fa-plus-square"></i> add a compound</button>
 
+                <button :v-on:click="Permalink()"><i
+                    class="far fa-plus-square"></i> permalink</button>
+                    <a :href="test">perma</a>
+
         <div class="bottom_menu">
             <a href="#" v-on:click="about_open = !about_open">about mixology</a>&nbsp;&nbsp;<a
                 href="https://github.com/theosanderson/mixology">github</a>&nbsp;&nbsp;<a
