@@ -566,6 +566,7 @@ Vue.component('vol_and_unit', {
   props: ["num_hint", "unit_hint",'value'],
   data: function () {
     return {
+      content: this.value
   
     }
   },
@@ -573,25 +574,25 @@ Vue.component('vol_and_unit', {
     updateValue() {
 
 
-      unit_details = volumes[this.value.raw_unit]
+      unit_details = volumes[this.content.raw_unit]
       if (unit_details) {
-        this.value.computed_value_in_litres = this.value.raw_number * volumes[this.value.raw_unit]
-        this.$emit('input', this.value)
+        this.content.computed_value_in_litres = this.content.raw_number * volumes[this.content.raw_unit]
+        this.$emit('input', this.content)
       }
       else {
 
         
-        this.value.computed_value_in_litres = null;
-        this.$emit('input', this.value)
+        this.content.computed_value_in_litres = null;
+        this.$emit('input', this.content)
       }
 
     }
   },
   watch: {
-    'value.raw_unit':function() { this.updateValue() },
-    'value.raw_number':function() { this.updateValue() }
+    'content.raw_unit':{immediate:true,handler() { this.updateValue() }},
+    'content.raw_number':{immediate:true,handler() { this.updateValue() }}
   },
-  template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="value.raw_number"></input><unit :title="unit_hint" type="vol" v-model="value.raw_unit" class="vol_unit"/></div>`
+  template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="content.raw_number"></input><unit :title="unit_hint" type="vol" v-model="content.raw_unit" class="vol_unit"/></div>`
 }
 );
 
