@@ -609,16 +609,19 @@ var data = {
   chosen: '',
   final_volume: {computed_value_in_litres:null},
 
-  message: 'Hello Vue!',
-
   onDeleteMe(x) {
     console.log(this)
     console.log(x)
-
-    index = data.uids.indexOf(x);
-    if (index > -1) {
-      data.uids.splice(index, 1);
-      //TODO FIX
+    to_delete = -1;
+    for (i in data.reagents_store){
+        if(data.reagents_store[i].uid==x){
+          to_delete = i
+        }
+    }
+    console.log(to_delete)
+    if (to_delete > -1) {
+      data.reagents_store.splice(to_delete, 1);
+  
     }
   }
 
