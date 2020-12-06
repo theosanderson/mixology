@@ -493,7 +493,8 @@ Vue.component('reagent_line', {
    <h3> {{displayName}}</h3>
           
           Custom molecular mass: <input type="number"  step="any"  placeholder="0.00" v-model="manual_mw"  class="classic"/>
-        </modal>
+       <div><button @click="unmodalise_settings()">OK</button></div>
+          </modal>
     <modal :name="'trash_modal_'+uid">
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
