@@ -9,7 +9,9 @@ precision_level = 5;
 $.getJSON("masses.json", function (data) {
   console.log(data);
   masses_data = data;
-  masses_keys = Object.keys(data).sort();
+  masses_keys = Object.keys(data).sort(function (a, b) {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+});
 
 
 
