@@ -53,7 +53,7 @@
         integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
 
     <link rel="stylesheet" href="index.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js"></script>
     <script src="https://kit.fontawesome.com/444154b6b5.js" crossorigin="anonymous"></script>
     <!--TODO del-->
     <script src="https://cdn.jsdelivr.net/npm/vue-js-modal@2.0.0-rc.6/dist/index.min.js"></script>
@@ -111,7 +111,7 @@
         <button :disabled="final_volume.computed_value_in_litres==null" class="ttip" :title="compoundTitle" v-on:click="AddCompound()"><i
                 class="far fa-plus-square"></i> add a compound</button>
 
-                    <button onclick="permalink()">Get permalink</button>
+                    <button onclick="permalink()" title="This button will redirect you to a URL storing the current recipe. You can then bookmark the URL or share it."><i class="far fa-save"></i> get permalink</button>
 
         <div class="bottom_menu">
             <a href="#" v-on:click="about_open = !about_open">about mixology</a>&nbsp;&nbsp;<a

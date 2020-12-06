@@ -365,7 +365,7 @@ Vue.component('reagent', {
 
   data: function () {
     return {
-      temp_name :this.value.name,
+      
       content:this.value,
       
       masses_data: masses_data,
@@ -381,11 +381,6 @@ Vue.component('reagent', {
       this.$emit('nameChange')
       this.$emit('input', this.content)
       console.log("name change")
-      this.UpdateMW()
-    }},
-    'temp_name':{ immediate:true,handler() {
-      this.content.name = this.temp_name;
-      console.log("updating content_name to ",this.temp_name)
       this.UpdateMW()
     }},
     
@@ -439,7 +434,7 @@ Vue.component('reagent', {
           :filter="filterFunction"
           :filter-by-query="true">
           <div class="mw" v-if="content.mw != null" :id="'mw_'+uid">(MW: {{content.mw}})</div>
-          <input autocomplete="off" v-model="temp_name" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
+          <input v-model="content.name" autocomplete="off" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
           <div :id="'hidden_'+uid" style="width: auto;
           display: inline-block;
           visibility: hidden;
