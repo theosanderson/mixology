@@ -295,11 +295,11 @@ Vue.component('needed_amount', {
   },
   template: `<div style="display:inline-block" class="computed">
   <div class="button_holder_flask"><i class="fas change-input-type-button toggler" :class="input_type_button_image" v-on:click="toggleType()" title="Toggle between measuring out mass and volume"></i></div>
-  <div style="display:inline-block" class="weight_input" v-if="input_method=='weight'">
-  <div class="needed_number" :title="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit type="mass"  v-model="mass_unit"/>
+  <div  @load="$('.needed_number').tooltip();"  style="display:inline-block" class="weight_input" v-if="input_method=='weight'">
+  <div class="needed_number" v-tooltip="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit type="mass"  v-model="mass_unit"/>
   </div>
-  <div style="display:inline-block" class="weight_input" v-if="input_method=='volume'">
-  <div class="needed_number" :title="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit type="vol"  v-model="vol_unit"/> of <conc_and_unit v-model="stock_concentration" /> stock
+  <div @load="$('.needed_number').tooltip();" style="display:inline-block" class="weight_input" v-if="input_method=='volume'">
+  <div class="needed_number" v-tooltip="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit type="vol"  v-model="vol_unit"/> of <conc_and_unit v-model="stock_concentration" /> stock
   </div>
   </div>`
 });
@@ -673,6 +673,3 @@ var app = new Vue({
   }
 
 });
-
-
-$('.ttip').tooltip();

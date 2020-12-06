@@ -283,3 +283,44 @@ div.about {
 h3.title {
 	cursor: default
 }
+
+
+.tooltip {
+	display: block !important;
+	z-index: 10000;
+  }
+  
+  .tooltip .tooltip-inner {
+	background: black;
+	color: white;
+	border-radius: 16px;
+	padding: 5px 10px 4px;
+  }
+  
+  .tooltip .tooltip-arrow {
+	width: 0;
+	height: 0;
+	border-style: solid;
+	position: absolute;
+	margin: 5px;
+	border-color: black;
+	z-index: 1;
+  }
+  
+  .tooltip[x-placement^="top"] {
+	margin-bottom: 5px;
+  }
+  
+  
+  .tooltip[aria-hidden='true'] {
+	visibility: hidden;
+	opacity: 0;
+	transition: opacity .15s, visibility .15s;
+  }
+  
+  .tooltip[aria-hidden='false'] {
+	visibility: visible;
+	opacity: 1;
+	transition: opacity .15s;
+  }
+  
