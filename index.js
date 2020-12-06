@@ -68,7 +68,7 @@ function run_thing(uid) {
 //////////
 
 masses = {"g":1, "mg":1e-3, "kg":1e3, "ug":1e-6, "ng":1e-9}
-volumes = {"l":1, "ml":1e-3, "ul":1e-6, "nl":1e-9, "litres":1, "litre":1}
+volumes = {"l":1, "ml":1e-3, "ul":1e-6, "nl":1e-9, "litres":1, "litre":1, "liters":1, "liter":1}
 
 concentrations = {};
 
@@ -287,7 +287,7 @@ Vue.component('needed_amount', {
 
   },
   template: `<div style="display:inline-block" class="computed">
-  <div class="button_holder_flask"><i title="Toggle between weight and volume mode" class="fas change-input-type-button" :class="input_type_button_image" v-on:click="toggleType()"></i></div>
+  <div class="button_holder_flask"><i class="fas change-input-type-button" :class="input_type_button_image" v-on:click="toggleType()"></i></div>
   <div style="display:inline-block" class="weight_input" v-if="input_method=='weight'">
   <div class="needed_number" :title="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit type="mass"  v-model="mass_unit"/>
   </div>
@@ -492,7 +492,7 @@ Vue.component('reagent_line', {
     <modal :name="'settings_modal_'+uid">
    <h3> {{displayName}}</h3>
           
-          Custom molecular mass: <input type="number"  placeholder="0.00" v-model="manual_mw"  class="classic"/>
+          Custom molecular mass: <input type="number"  step="any"  placeholder="0.00" v-model="manual_mw"  class="classic"/>
         </modal>
     <modal :name="'trash_modal_'+uid">
           Are you sure you want to delete  {{displayName}}?
@@ -544,7 +544,7 @@ methods:{
   },
   //unit_types = "g_per_litre", "litre_per_litre", "moles_per_litre"
 
-  template:`<div style="display:inline-block"><input type="number"  placeholder="conc." class="number" v-model="raw_number"></input><unit type="conc" v-model="raw_unit" /></div>`
+  template:`<div style="display:inline-block"><input type="number"  step="any" placeholder="conc." class="number" v-model="raw_number"></input><unit type="conc" v-model="raw_unit" /></div>`
 }
 );
 
@@ -577,7 +577,7 @@ methods:{
     raw_unit(){ this.updateValue()},
     raw_number(){ this.updateValue()}
   },
-  template:`<div style="display:inline-block"><input type="number" :title="num_hint" placeholder="vol." class="number" v-model="raw_number"></input><unit :title="unit_hint" type="vol" v-model="raw_unit" /></div>`
+  template:`<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="raw_number"></input><unit :title="unit_hint" type="vol" v-model="raw_unit" /></div>`
 }
 );
 
