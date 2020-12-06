@@ -145,6 +145,9 @@ Vue.component('needed_amount', {
     }
   },
   methods:{toggleType(){
+    if(this.desired_concentration_is_volumetric){
+      alert("Since your desired concentration is specified in volumetric units, you must measure out a volume.")
+    }
     if(this.chosen_input_method=="weight"){
       this.chosen_input_method = "volume"
       this.vol_unit = ""
@@ -157,6 +160,21 @@ Vue.component('needed_amount', {
 
   computed:
   {
+    input_method:function(){
+      if(this.desired_concentration_is_volumetric){
+        return "volume"
+      }
+      return this.chosen_input_method;
+    },
+    desired_concentration_is_volumetric: function(){
+      if([null,"grams","moles"].includes(this.desired_concentration.type_per_litre)){
+        return false;
+      }
+      else{
+        return true;
+      }
+    }
+    ,
     available_input_methods: function(){
       if(this.desired_concentration.type_per_litre=="grams"){
         return ["weight", "volume"]
@@ -256,7 +274,7 @@ Vue.component('needed_amount', {
 
     },
     input_type_button_image(){
-      if(this.chosen_input_method=="weight"){
+      if(this.input_method=="weight"){
           return "fa-balance-scale-right";
       }
       else{
@@ -267,10 +285,10 @@ Vue.component('needed_amount', {
   },
   template: `<div style="display:inline-block" class="computed">
   <div class="button_holder_flask"><i title="Toggle between weight and volume mode" class="fas change-input-type-button" :class="input_type_button_image" v-on:click="toggleType()"></i></div>
-  <div style="display:inline-block" class="weight_input" v-if="chosen_input_method=='weight'">
+  <div style="display:inline-block" class="weight_input" v-if="input_method=='weight'">
   <div class="needed_number" :title="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit type="mass"  v-model="mass_unit"/>
   </div>
-  <div style="display:inline-block" class="weight_input" v-if="chosen_input_method=='volume'">
+  <div style="display:inline-block" class="weight_input" v-if="input_method=='volume'">
   <div class="needed_number" :title="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit type="vol"  v-model="vol_unit"/> of <conc_and_unit v-model="stock_concentration" /> stock
   </div>
   </div>`
@@ -463,8 +481,8 @@ Vue.component('reagent_line', {
       else{
         return this.reagent_info.name;
       }
-    }
-  },
+    }},
+  
   template: `
 <div class="reagent_line" @mouseover="hover = true"
     @mouseleave="hover = false">
@@ -580,7 +598,7 @@ Vue.component('buffer_header', {
 
 var data = {
   counter: 3,
-  uids: ['a','b','c'],
+  uids: [1,2],
   model: '',
   chosen: '',
   final_volume:null,
@@ -603,6 +621,17 @@ var data = {
 var app = new Vue({
   el: '#app',
   data: data,
+  computed:{
+    compoundTitle(){
+      if(this.final_volume==null){
+        return "First, please enter a final volume above, with a unit"
+      }
+      else{
+        return ""
+      }
+
+    }
+  },
   methods: {
 
 

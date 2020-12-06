@@ -55,10 +55,14 @@
   
   
 
-  <button :disabled="final_volume==null" v-on:click="AddCompound()"><i class="far fa-plus-square"></i> add a compound</button>
+  <button :disabled="final_volume==null" :title="compoundTitle" v-on:click="AddCompound()"><i class="far fa-plus-square"></i> add a compound</button>
             
-
+<div class="bottom_menu">
+ <a href="#">about mixology</a> <a href="https://github.com/theosanderson/mixology">github</a>
 </div>
+</div>
+
+
           
         
         <script src="index.js"></script>
