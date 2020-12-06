@@ -29,10 +29,17 @@ input {
 }
 
 #app {
-	width: 960px;
+	width: 920px;
 	margin: 0 auto;
 }
 
+@media screen and (max-width: 500px) {
+	#app {
+		width:870px !important;
+		
+		
+	}
+}
 /*
 @media screen and (max-width: 500px) {
 	#app {
