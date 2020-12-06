@@ -610,14 +610,13 @@ Vue.component('vol_and_unit', {
 
 
 var data = {
-  buffer_name:"test buffer",
+  buffer_name:null,
+  times_permaclicked:0,
   counter: 4,
   reagents_store: [],
    model: '',
   about_open: false,
   video_open:false,
-  chosen: '',
-  test:'',
   final_volume: {raw_number:null,raw_unit:null,computed_value_in_litres:null},
 
   onDeleteMe(x) {
@@ -651,6 +650,12 @@ if(json){
   
 
 }
+if(new_data){
+
+  data['final_volume'] = new_data['final_vol']
+  data['reagents_store'] = new_data['reagents_store']
+  data['buffer_name'] = new_data['buffer_name']
+}
 
 
 
@@ -675,15 +680,10 @@ app = new Vue({
     }
   },
   methods: {
-    Permalink(){
-      to_store = {"final_vol":data.final_volume, "buffer_name":data.buffer_name, "reagents_store":data.reagents_store};
-      json = JSON.stringify(to_store)
-      encoded = encodeURIComponent(json)
-      data.test = "/?data="+encoded
-    }
 
+   
 
-    ,
+    
     AddCompound() {
       window.onbeforeunload = function () {
         return true;
@@ -708,11 +708,16 @@ app = new Vue({
 
 });
 
-if(false){
-  data.final_volume = new_data['final_volume']
-data.buffer_name = new_data['buffer_name']
-data.reagents_store = new_data['reagents_store']
-     
+
 }
 
+function permalink(){
+
+    console.log('test')
+    to_store = {"final_vol":data.final_volume, "buffer_name":data.buffer_name, "reagents_store":data.reagents_store};
+    json = JSON.stringify(to_store)
+    encoded = encodeURIComponent(json)
+    new_url= "/?data="+encoded
+    window.location.href = new_url;
+    console.log(new_url)
 }
