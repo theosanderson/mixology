@@ -146,13 +146,11 @@ Vue.component('needed_amount', {
   data: function () {
     return {
       value:{
-        // TODO
+        mass_unit: "",
+        chosen_input_method: 'weight',
+        vol_unit: "",
+        stock_concentration: { number: null, type_per_litre: null }
       },
-      mass_unit: "",
-      count: 0,
-      chosen_input_method: 'weight',
-      vol_unit: "",
-      stock_concentration: { number: null, type_per_litre: null }
     }
   },
   methods: {
@@ -160,15 +158,15 @@ Vue.component('needed_amount', {
       if (this.desired_concentration_is_volumetric) {
         alert("Since your desired concentration is specified in volumetric units, you must measure out a volume.")
       }
-      if (this.chosen_input_method == "weight") {
-        this.chosen_input_method = "volume"
-        this.vol_unit = ""
-        this.mass_unit = ""
+      if (this.value.chosen_input_method == "weight") {
+        this.value.chosen_input_method = "volume"
+        this.value.vol_unit = ""
+        this.value.mass_unit = ""
       }
       else {
-        this.chosen_input_method = "weight"
-        this.mass_unit = ""
-        this.vol_unit = ""
+        this.value.chosen_input_method = "weight"
+        this.value.mass_unit = ""
+        this.value.vol_unit = ""
       }
     }
   },
@@ -179,7 +177,7 @@ Vue.component('needed_amount', {
       if (this.desired_concentration_is_volumetric) {
         return "volume"
       }
-      return this.chosen_input_method;
+      return this.value.chosen_input_method;
     },
     desired_concentration_is_volumetric: function () {
       if ([null, "grams", "moles"].includes(this.desired_concentration.type_per_litre)) {
@@ -190,26 +188,6 @@ Vue.component('needed_amount', {
       }
     }
     ,
-    available_input_methods: function () {
-      if (this.desired_concentration.type_per_litre == "grams") {
-        return ["weight", "volume"]
-      }
-      else if (this.desired_concentration.type_per_litre == "litres") {
-        return ["volume"]
-      }
-      else if (this.desired_concentration.type_per_litre == "moles") {
-        if (this.mw) {
-          return ["weight", "volume"]
-        }
-        else {
-          return ['volume']
-        }
-      }
-      else {
-        return [];
-      }
-
-    },
 
 
     needed_amount_mass() {
@@ -217,7 +195,7 @@ Vue.component('needed_amount', {
         return [question_marks, "Unable to calculate the required value: please enter a valid total volume above"]
       }
 
-      if (masses[this.mass_unit] == undefined) {
+      if (masses[this.value.mass_unit] == undefined) {
         return [question_marks, "Unable to calculate the required value: please enter a valid mass unit to the right (e.g. mg)"]
       }
 
@@ -226,14 +204,14 @@ Vue.component('needed_amount', {
       }
       if (this.desired_concentration.type_per_litre == "grams") {
 
-        mass_unit_value = masses[this.mass_unit];
+        mass_unit_value = masses[this.value.mass_unit];
 
         val = this.final_volume * this.desired_concentration.number / mass_unit_value
         return [formatNumber(precision_level, val), ""]
       }
       else if (this.mw > 0 & this.desired_concentration.type_per_litre == "moles") {
 
-        mass_unit_value = masses[this.mass_unit];
+        mass_unit_value = masses[this.value.mass_unit];
         val = this.final_volume * this.desired_concentration.number * this.mw / mass_unit_value
         return [formatNumber(precision_level, val), ""]
       }
@@ -249,7 +227,7 @@ Vue.component('needed_amount', {
         return [question_marks, "Unable to calculate the required value: please enter a valid total volume above"]
       }
 
-      if (volumes[this.vol_unit] == undefined) {
+      if (volumes[this.value.vol_unit] == undefined) {
         return [question_marks, "Unable to calculate the required value: please enter a valid volume unit to the right (e.g. ml)"]
       }
 
@@ -257,32 +235,32 @@ Vue.component('needed_amount', {
         return [question_marks, "Unable to calculate the required value: please enter a valid desired concentration"]
       }
 
-      if (!this.stock_concentration.number) {
+      if (!this.value.stock_concentration.number) {
         return [question_marks, "Unable to calculate the required value: please enter a valid stock concentration to the right"]
       }
 
 
-      if (this.desired_concentration.type_per_litre == this.stock_concentration.type_per_litre) {
+      if (this.desired_concentration.type_per_litre == this.value.stock_concentration.type_per_litre) {
         
-        vol_unit_value = volumes[this.vol_unit];
-        val = this.final_volume * this.desired_concentration.number / (this.stock_concentration.number * vol_unit_value);
+        vol_unit_value = volumes[this.value.vol_unit];
+        val = this.final_volume * this.desired_concentration.number / (this.value.stock_concentration.number * vol_unit_value);
         return [formatNumber(precision_level, val), ""]
 
       }
-      else if (this.desired_concentration.type_per_litre == "moles" & this.stock_concentration.type_per_litre == "grams") {
+      else if (this.desired_concentration.type_per_litre == "moles" & this.value.stock_concentration.type_per_litre == "grams") {
         if (!this.mw) {
           return [question_marks, mw_message]
         }
-        vol_unit_value = volumes[this.vol_unit];
-        val = this.final_volume * this.desired_concentration.number / (this.stock_concentration.number * vol_unit_value / this.mw);
+        vol_unit_value = volumes[this.value.vol_unit];
+        val = this.final_volume * this.desired_concentration.number / (this.value.stock_concentration.number * vol_unit_value / this.mw);
         return [formatNumber(precision_level, val), ""]
       }
-      else if (this.desired_concentration.type_per_litre == "grams" & this.stock_concentration.type_per_litre == "moles") {
+      else if (this.desired_concentration.type_per_litre == "grams" & this.value.stock_concentration.type_per_litre == "moles") {
         if (!this.mw) {
           return [question_marks, mw_message]
         }
-        vol_unit_value = volumes[this.vol_unit];
-        val = this.final_volume * this.desired_concentration.number  / (this.stock_concentration.number * vol_unit_value* this.mw);
+        vol_unit_value = volumes[this.value.vol_unit];
+        val = this.final_volume * this.desired_concentration.number  / (this.value.stock_concentration.number * vol_unit_value* this.mw);
         return [formatNumber(precision_level, val), ""]
       }
       else {
@@ -304,13 +282,20 @@ Vue.component('needed_amount', {
     }
 
   },
+  watch:{value: {
+    handler(val){
+     this.$emit('input', this.value)
+    },
+    deep: true
+ }
+},
   template: `<div style="display:inline-block" class="computed">
   <div class="button_holder_flask"><i class="fas change-input-type-button toggler" :class="input_type_button_image" v-on:click="toggleType()" title="Toggle between measuring out mass and volume"></i></div>
   <div   style="display:inline-block" v-if="input_method=='weight'">
-  <div class="needed_number" v-tooltip="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit key="mass" type="mass"  v-model="mass_unit"/>
+  <div class="needed_number" v-tooltip="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit key="mass" type="mass"  v-model="value.mass_unit"/>
   </div>
   <div style="display:inline-block"  v-if="input_method=='volume'">
-  <div class="needed_number" v-tooltip="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit key="vol" type="vol"  v-model="vol_unit" class="vol_unit2"/> of <conc_and_unit v-model="stock_concentration" /> stock
+  <div class="needed_number" v-tooltip="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit key="vol" type="vol"  v-model="value.vol_unit" class="vol_unit2"/> of <conc_and_unit v-model="value.stock_concentration" /> stock
   </div>
   </div>`
 });
@@ -364,6 +349,7 @@ Vue.component('unit', {
 
 
     }
+    
   },
   template: `<div class="unit" style="display:inline-block">
       <vue-simple-suggest :filter="filterFunction"
@@ -468,7 +454,10 @@ Vue.component('reagent_line', {
     return {
       value:{
         desired_concentration: { number: null, type_per_litre: null },
-        manual_mw: null,reagent_info: { name: '', mw: null }},
+        manual_mw: null,reagent_info: { name: '', mw: null },
+      needed_amount:{}
+    
+    },
       
       count: 0,
       hover: false,
@@ -532,7 +521,7 @@ Vue.component('reagent_line', {
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="value.desired_concentration"/><reagent @nameChange="value.manual_mw = null" :manual_mw="value.manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume" :desired_concentration="value.desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="value.desired_concentration"/><reagent @nameChange="value.manual_mw = null" :manual_mw="value.manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume" :desired_concentration="value.desired_concentration" v-model="value.needed_amount"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -625,7 +614,7 @@ Vue.component('vol_and_unit', {
 var data = {
   counter: 3,
   reagents_store: [],
-  model: '',
+    model: '',
   about_open: false,
   video_open:false,
   chosen: '',
