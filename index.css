@@ -33,6 +33,7 @@ input {
 	margin: 0 auto;
 }
 
+/*
 @media screen and (max-width: 500px) {
 	#app {
 		min-width:320px;
@@ -44,6 +45,7 @@ input {
 	.needed_number{width:50px !important;}
 	.phone_warning{display:block !important; color:#777}
   }
+  */
 
   .phone_warning{display:none}
 /* Chrome, Safari, Edge, Opera */
