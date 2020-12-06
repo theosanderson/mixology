@@ -33,6 +33,14 @@ input {
 	margin: 0 auto;
 }
 
+@media screen and (max-width: 500px) {
+	#app {
+		min-width:320px;
+		width:auto;
+		
+	}
+  }
+
 /* Chrome, Safari, Edge, Opera */
 
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
