@@ -6,6 +6,8 @@ masses_keys = [];
 question_marks = '???'
 precision_level = 5;
 
+mw_message = "Unable to calculate the required value: you need to add a molecular weight to this reagent to make this conversion. Either choose a reagent from the suggestion list or click on the cog icon.";
+
 $.getJSON("masses.json", function (data) {
   console.log(data);
   masses_data = data;
@@ -209,15 +211,15 @@ Vue.component('needed_amount', {
 
     needed_amount_mass() {
       if (!this.final_volume) {
-        return [question_marks, "error: please enter a valid total volume above"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid total volume above"]
       }
 
       if (masses[this.mass_unit] == undefined) {
-        return [question_marks, "error: please enter a valid mass unit to the right (e.g. mg)"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid mass unit to the right (e.g. mg)"]
       }
 
       if (!this.desired_concentration.number) {
-        return [question_marks, "error: please enter a valid desired concentration"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid desired concentration"]
       }
       if (this.desired_concentration.type_per_litre == "grams") {
 
@@ -234,42 +236,48 @@ Vue.component('needed_amount', {
       }
       else {
         if (!this.mw) {
-          return [question_marks, "error: you need to add a molecular weight to this reagent to make this conversion, click on the cog icon"]
+          return [question_marks, mw_message]
         }
-        return [question_marks, "error: you seem to be trying to convert between incompatible types"]
+        return [question_marks, "Unable to calculate the required value: you seem to be trying to convert between incompatible types"]
       }
     },
     needed_amount_volume() {
       if (!this.final_volume) {
-        return [question_marks, "error: please enter a valid total volume above"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid total volume above"]
       }
 
       if (volumes[this.vol_unit] == undefined) {
-        return [question_marks, "error: please enter a valid volume unit to the right (e.g. ml)"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid volume unit to the right (e.g. ml)"]
       }
 
       if (!this.desired_concentration.number) {
-        return [question_marks, "error: please enter a valid desired concentration"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid desired concentration"]
       }
 
       if (!this.stock_concentration.number) {
-        return [question_marks, "error: please enter a valid stock concentration to the right"]
+        return [question_marks, "Unable to calculate the required value: please enter a valid stock concentration to the right"]
       }
 
 
       if (this.desired_concentration.type_per_litre == this.stock_concentration.type_per_litre) {
-
+        
         vol_unit_value = volumes[this.vol_unit];
         val = this.final_volume * this.desired_concentration.number / (this.stock_concentration.number * vol_unit_value);
         return [formatNumber(precision_level, val), ""]
 
       }
       else if (this.desired_concentration.type_per_litre == "moles" & this.stock_concentration.type_per_litre == "grams") {
+        if (!this.mw) {
+          return [question_marks, mw_message]
+        }
         vol_unit_value = volumes[this.vol_unit];
         val = this.final_volume * this.desired_concentration.number / (this.stock_concentration.number * vol_unit_value * this.mw);
         return [formatNumber(precision_level, val), ""]
       }
       else if (this.desired_concentration.type_per_litre == "grams" & this.stock_concentration.type_per_litre == "moles") {
+        if (!this.mw) {
+          return [question_marks, mw_message]
+        }
         vol_unit_value = volumes[this.vol_unit];
         val = this.final_volume * this.desired_concentration.number * this.mw / (this.stock_concentration.number * vol_unit_value);
         return [formatNumber(precision_level, val), ""]
@@ -299,7 +307,7 @@ Vue.component('needed_amount', {
   <div class="needed_number" v-tooltip="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit key="mass" type="mass"  v-model="mass_unit"/>
   </div>
   <div style="display:inline-block"  v-if="input_method=='volume'">
-  <div class="needed_number" v-tooltip="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit key="vol" type="vol"  v-model="vol_unit"/> of <conc_and_unit v-model="stock_concentration" /> stock
+  <div class="needed_number" v-tooltip="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit key="vol" type="vol"  v-model="vol_unit" class="vol_unit2"/> of <conc_and_unit v-model="stock_concentration" /> stock
   </div>
   </div>`
 });
@@ -593,7 +601,7 @@ Vue.component('vol_and_unit', {
     raw_unit() { this.updateValue() },
     raw_number() { this.updateValue() }
   },
-  template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="raw_number"></input><unit :title="unit_hint" type="vol" v-model="raw_unit" /></div>`
+  template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="raw_number"></input><unit :title="unit_hint" type="vol" v-model="raw_unit" class="vol_unit"/></div>`
 }
 );
 
