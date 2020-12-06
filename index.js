@@ -411,6 +411,7 @@ Vue.component('reagent', {
       console.log("mw_change");
       this.value.mw = newVal;
       this.$emit('input', this.value)
+      setTimeout("run_thing('" + this.uid + "')", 1)
     }
   },
   methods: {
