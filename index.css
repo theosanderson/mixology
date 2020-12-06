@@ -127,7 +127,8 @@ border: 1px solid #aaa;
 
   div.measuring_tape{font-size:20px;}
 
-  .mw{position:absolute; left:50px;top:5px;font-size:0.7em;color:gray;padding-top:5px; padding-left:15px;}
+  .mw{position:absolute; left:50px;top:5px;font-size:0.7em;color:gray;padding-top:5px; padding-left:5px;
+background:rgba(255,255,255,0.9)}
 
   .classic{border:1px solid gray;}
 

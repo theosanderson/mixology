@@ -56,9 +56,10 @@ function run_thing(uid) {
   var elemDiv = document.getElementById("hidden_" + uid);
   var elemInput = document.getElementById("input_" + uid);
   elemDiv.innerText = elemInput.value;
-  x = elemDiv.clientWidth;
+  x = elemDiv.clientWidth+10;
   var target = document.getElementById("mw_" + uid);
   if (target != null){
+    x=Math.min(x,200)
   document.getElementById("mw_" + uid).style.left = x + 'px';
   }
 }
@@ -659,3 +660,4 @@ var app = new Vue({
 
 
 $(document).tooltip({show: null});
+
