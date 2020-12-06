@@ -618,6 +618,7 @@ var data = {
   uids: [],
   model: '',
   about_open: false,
+  video_open:false,
   chosen: '',
   final_volume: null,
 

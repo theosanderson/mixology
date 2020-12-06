@@ -103,7 +103,12 @@
                     extracts molecular weights from <a href="https://www.ebi.ac.uk/chebi/">ChEBI</a> to make these
                     calculations as smooth as possible.</p>
                 <p>You can't save these mixtures yet, but you could print them as a PDF.</p>
-                <button v-on:click="about_open = !about_open">Close this message</button>
+           <p><a href="#" v-on:click="video_open = !video_open">View a video demo</button></p>
+            
+                <iframe v-if="video_open" width="560" height="315" src="https://www.youtube.com/embed/rN39ac1IrBs" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+           <div>  <button v-on:click="about_open = !about_open">Close this message</button></div>
+
+                
             </div>
         </transition>
     </div>
