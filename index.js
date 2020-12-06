@@ -15,8 +15,9 @@ $.getJSON("masses.json", function (data) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
 });
 
-
+  
   startup();
+  $('.overlay').hide();
 
 });
 
