@@ -549,8 +549,7 @@ methods:{
 
 
 Vue.component('vol_and_unit', {
-  props:{
-  },
+  props:["num_hint", "unit_hint"],
   data: function(){ return {
     raw_unit : null,
     raw_number : null,
@@ -577,7 +576,7 @@ methods:{
     raw_unit(){ this.updateValue()},
     raw_number(){ this.updateValue()}
   },
-  template:`<div style="display:inline-block"><input type="number"  placeholder="vol." class="number" v-model="raw_number"></input><unit type="vol" v-model="raw_unit" /></div>`
+  template:`<div style="display:inline-block"><input type="number" :title="num_hint" placeholder="vol." class="number" v-model="raw_number"></input><unit :title="unit_hint" type="vol" v-model="raw_unit" /></div>`
 }
 );
 

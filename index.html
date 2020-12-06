@@ -62,10 +62,10 @@
        
         <div id="app">
             
-            <h3><img width="24" height="24" style="position:relative; top:2px; margin-right:-2px" src="icon.svg">
+            <h3 class="title"><img width="24" height="24" style="position:relative; top:2px; margin-right:-2px" src="icon.svg">
                 
             </img> mixology</h3>
-            <p>Recipe for <vol_and_unit v-model="final_volume"></vol_and_unit> of <input placeholder="buffer name" class="buffer_name"/></p>
+            <p>Recipe for <vol_and_unit num_hint="Enter a number here, e.g. 500 for 500 ml" unit_hint="Enter a number here, e.g. ml" v-model="final_volume"></vol_and_unit> of <input placeholder="buffer name" class="buffer_name"/></p>
             
 
             <hr />

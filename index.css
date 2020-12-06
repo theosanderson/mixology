@@ -187,3 +187,5 @@ border: 1px solid #aaa;
 	opacity: 0.5;
 	transform: translateY(20px);
   }
+
+  h3.title{cursor:default}
