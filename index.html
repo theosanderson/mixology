@@ -47,7 +47,11 @@
 
 
                 
-            <div><reagent_line :final_volume="final_volume" @deleteme="onDeleteMe" :key="uid" v-for="uid in uids" :uid="uid"></reagent_line></div>
+            <div>
+                <transition-group name="list" tag="p">
+                <reagent_line :final_volume="final_volume" @deleteme="onDeleteMe" :key="uid" v-for="uid in uids" :uid="uid"></reagent_line>
+            </transition-group>
+        </div>
             
  
   <br>
@@ -58,9 +62,18 @@
   <button :disabled="final_volume==null" :title="compoundTitle" v-on:click="AddCompound()"><i class="far fa-plus-square"></i> add a compound</button>
             
 <div class="bottom_menu">
- <a href="#">about mixology</a> <a href="https://github.com/theosanderson/mixology">github</a>
+ <a href="#" v-on:click="about_open = !about_open">about mixology</a> <a href="https://github.com/theosanderson/mixology">github</a>
 </div>
+<transition name="fade">
+<div class="about" v-if="about_open">
+<p>Mixology is a tool that makes it easy to calculate the ingredients needed for media, buffers, etc. First you enter the final volume of buffer at the top. Then on the left hand side you enter the concentrations desired, in any units (mg/ul, uM, % v/v, etc.). The amounts you need to measure out will appear on the right hand side, in the units that you enter there. Mixology automatically extracts molecular weights from <a href="https://www.ebi.ac.uk/chebi/">ChEBI</a> to make these calculations as smooth as possible.</p>
+<p>You can't save these mixtures yet, but you could print them as a PDF.</p>
+<button v-on:click="about_open = !about_open">Close this message</button>
 </div>
+</transition>
+</div>
+
+
 
 
           

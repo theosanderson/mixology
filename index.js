@@ -151,10 +151,12 @@ Vue.component('needed_amount', {
     if(this.chosen_input_method=="weight"){
       this.chosen_input_method = "volume"
       this.vol_unit = ""
+      this.mass_unit = ""
     }
     else{
       this.chosen_input_method="weight"
       this.mass_unit = ""
+      this.vol_unit = ""
     }
   }},
 
@@ -598,8 +600,9 @@ Vue.component('buffer_header', {
 
 var data = {
   counter: 3,
-  uids: [1,2],
+  uids: [],
   model: '',
+  about_open:false,
   chosen: '',
   final_volume:null,
 
@@ -643,6 +646,9 @@ var app = new Vue({
       ]
     },
     AddCompound() {
+      window.onbeforeunload = function() {
+        return true;
+    }; 
       data.uids.push(data.counter);
       data.counter++;
     }
