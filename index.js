@@ -1,4 +1,5 @@
 ﻿
+
 Vue.use(window["vue-js-modal"].default);
 
 masses_data = Array();
@@ -17,7 +18,7 @@ $.getJSON("masses.json", function (data) {
 
   
   startup();
-  $('.overlay').hide();
+  
 
 });
 
@@ -637,19 +638,30 @@ var data = {
 
 }
 
+async function loadNewData(){
 var urlParams = new URLSearchParams(window.location.search);
-json =   urlParams.get('data')
-console.log(json)
+recipe =   urlParams.get('recipe')
+console.log(recipe)
+if(!recipe){
+  return
+}
 
-var new_data = false;
 
-if(json){
-  console.log("woo")
-  new_data = JSON.parse(json)
+const cityRef = db.collection('recipes').doc(recipe);
+const doc = await cityRef.get();
+if (!doc.exists) {
+  console.log('No such document!');
+  return
+} else {
+  
+}
+
+
+  new_data = JSON.parse(doc.data().json)
   console.log(new_data)
   
 
-}
+
 if(new_data){
 
   data['final_volume'] = new_data['final_vol']
@@ -657,13 +669,16 @@ if(new_data){
   data['buffer_name'] = new_data['buffer_name']
 }
 
-
+}
 
 var app;
 
+var test;
 
-function startup(){
+async function startup(){
+  
 
+await loadNewData();
 
 app = new Vue({
   el: '#app',
@@ -708,16 +723,43 @@ app = new Vue({
 
 });
 
-
+$('.overlay').hide();
 }
 
-function permalink(){
+
+
+
+
+
+function makeid(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+     result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+
+
+var db = firebase.firestore();
+async function permalink(){
 
     console.log('test')
     to_store = {"final_vol":data.final_volume, "buffer_name":data.buffer_name, "reagents_store":data.reagents_store};
     json = JSON.stringify(to_store)
-    encoded = encodeURIComponent(json)
-    new_url= "/?data="+encoded
-    window.location.href = new_url;
-    console.log(new_url)
+    const data_for_db = {
+      json: json,
+    
+    };
+    
+    id = makeid(10);
+    // Add a new document in collection "cities" with ID 'LA'
+    const res =  await db.collection('recipes').doc(id).set(data_for_db) ;
+    window.onbeforeunload = null;
+    
+    console.log("/?recipe="+id);
+    window.location.replace("/?recipe="+id);
+    
 }
