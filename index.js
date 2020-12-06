@@ -362,18 +362,11 @@ Vue.component('unit', {
 
 
 Vue.component('reagent', {
-  props: {
-    uid: '',
-    manual_mw: null,
-
-  },
+  props: ['uid','manual_mw','value'],
 
   data: function () {
     return {
-      value: {
-        name: '',
-        mw: null
-      },
+      content:this.value,
       name: "",
       masses_data: masses_data,
       reagentsList() { return masses_keys; },
@@ -399,13 +392,13 @@ Vue.component('reagent', {
   watch: {
     name: function (newer, older) {
       this.$emit('nameChange')
-      this.value.name = newer;
-      this.$emit('input', this.value)
+      this.content.name = newer;
+      this.$emit('input', this.content)
     },
     mw: function (newVal) {
       console.log("mw_change");
-      this.value.mw = newVal;
-      this.$emit('input', this.value)
+      this.content.mw = newVal;
+      this.$emit('input', this.content)
       setTimeout("run_thing('" + this.uid + "')", 1)
     }
   },
@@ -433,7 +426,7 @@ Vue.component('reagent', {
           :filter="filterFunction"
           :filter-by-query="true">
           <div class="mw" v-if="mw != null" :id="'mw_'+uid">(MW: {{mw}})</div>
-          <input autocomplete="off" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
+          <input autocomplete="off" v-model="content.name" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
           <div :id="'hidden_'+uid" style="width: auto;
           display: inline-block;
           visibility: hidden;
@@ -447,15 +440,12 @@ Vue.component('reagent', {
 
 
 Vue.component('reagent_line', {
-  props: ['uid', 'final_volume'],
+  props: ['uid', 'final_volume','value'],
   data: function () {
     return {
-      value:{
-        desired_concentration: { number: null, type_per_litre: null },
-        manual_mw: null,reagent_info: { name: '', mw: null },
-      needed_amount:{}
+      content:this.value
     
-    },
+    ,
       
       count: 0,
       hover: false,
@@ -488,18 +478,18 @@ Vue.component('reagent_line', {
   },
   computed: {
     displayName() {
-      if (this.value.reagent_info.name == '') {
+      if (this.content.reagent_info.name == '') {
         return 'unnamed chemical';
       }
       else {
-        return this.value.reagent_info.name;
+        return this.content.reagent_info.name;
       }
     }
   },
   watch: {
-    value: {
+    content: {
        handler(val){
-        this.$emit('input', this.value)
+        this.$emit('input', this.content)
        },
        deep: true
     }
@@ -512,14 +502,14 @@ Vue.component('reagent_line', {
     <modal :name="'settings_modal_'+uid">
    <h3> {{displayName}}</h3>
           
-          Custom molecular mass: <input type="number"  step="any"  placeholder="0.00" v-model="value.manual_mw"  class="classic"/>
+          Custom molecular mass: <input type="number"  step="any"  placeholder="0.00" v-model="content.manual_mw"  class="classic"/>
        <div><button @click="unmodalise_settings()">OK</button></div>
           </modal>
     <modal :name="'trash_modal_'+uid">
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="value.desired_concentration"/><reagent @nameChange="value.manual_mw = null" :manual_mw="value.manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume" :desired_concentration="value.desired_concentration" v-model="value.needed_amount"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="content.desired_concentration"/><reagent @nameChange="content.manual_mw = null" :manual_mw="content.manual_mw" :uid="uid" v-model="content.reagent_info" /><needed_amount :mw="content.reagent_info.mw" :final_volume="final_volume" :desired_concentration="content.desired_concentration" v-model="content.needed_amount"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -666,7 +656,12 @@ var app = new Vue({
         return true;
       };
       data.reagents_store.push(
-        {'uid':data.counter,info:null}
+        {'uid':data.counter,info:{
+      
+        desired_concentration: { number: null, type_per_litre: null },
+        manual_mw: null,reagent_info: { name: '', mw: null },
+      needed_amount:{}
+    }}
         );
       data.counter++;
     }
