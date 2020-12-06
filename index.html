@@ -79,8 +79,8 @@
 
         <div>
             <transition-group name="list" tag="p">
-                <reagent_line :final_volume="final_volume.computed_value_in_litres" @deleteme="onDeleteMe" :key="uid.uid" v-for="uid in uids"
-                    :uid="uid"></reagent_line>
+                <reagent_line v-model="x.info" :final_volume="final_volume.computed_value_in_litres" @deleteme="onDeleteMe" :key="x.uid" v-for="x in reagents_store"
+                    :uid="x.uid"></reagent_line>
             </transition-group>
         </div>
 

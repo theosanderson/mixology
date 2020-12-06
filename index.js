@@ -466,12 +466,14 @@ Vue.component('reagent_line', {
   props: ['uid', 'final_volume'],
   data: function () {
     return {
-      value:{manual_mw: null,reagent_info: { name: '', mw: null }},
+      value:{
+        desired_concentration: { number: null, type_per_litre: null },
+        manual_mw: null,reagent_info: { name: '', mw: null }},
       
       count: 0,
       hover: false,
       
-      desired_concentration: { number: null, type_per_litre: null },
+      
 
 
       modalise() {
@@ -507,6 +509,15 @@ Vue.component('reagent_line', {
       }
     }
   },
+  watch: {
+    value: {
+       handler(val){
+        this.$emit('input', this.value)
+       },
+       deep: true
+    }
+  },
+
 
   template: `
 <div class="reagent_line" @mouseover="hover = true"
@@ -521,7 +532,7 @@ Vue.component('reagent_line', {
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="value.manual_mw = null" :manual_mw="value.manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="value.desired_concentration"/><reagent @nameChange="value.manual_mw = null" :manual_mw="value.manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume" :desired_concentration="value.desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -613,7 +624,7 @@ Vue.component('vol_and_unit', {
 
 var data = {
   counter: 3,
-  uids: [],
+  reagents_store: [],
   model: '',
   about_open: false,
   video_open:false,
@@ -629,6 +640,7 @@ var data = {
     index = data.uids.indexOf(x);
     if (index > -1) {
       data.uids.splice(index, 1);
+      //TODO FIX
     }
   }
 
@@ -667,8 +679,8 @@ var app = new Vue({
       window.onbeforeunload = function () {
         return true;
       };
-      data.uids.push(
-        {'uid':data.counter}
+      data.reagents_store.push(
+        {'uid':data.counter,info:null}
         );
       data.counter++;
     }
