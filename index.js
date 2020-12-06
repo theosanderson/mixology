@@ -271,7 +271,7 @@ Vue.component('needed_amount', {
           return [question_marks, mw_message]
         }
         vol_unit_value = volumes[this.vol_unit];
-        val = this.final_volume * this.desired_concentration.number / (this.stock_concentration.number * vol_unit_value * this.mw);
+        val = this.final_volume * this.desired_concentration.number / (this.stock_concentration.number * vol_unit_value / this.mw);
         return [formatNumber(precision_level, val), ""]
       }
       else if (this.desired_concentration.type_per_litre == "grams" & this.stock_concentration.type_per_litre == "moles") {
@@ -279,7 +279,7 @@ Vue.component('needed_amount', {
           return [question_marks, mw_message]
         }
         vol_unit_value = volumes[this.vol_unit];
-        val = this.final_volume * this.desired_concentration.number * this.mw / (this.stock_concentration.number * vol_unit_value);
+        val = this.final_volume * this.desired_concentration.number  / (this.stock_concentration.number * vol_unit_value* this.mw);
         return [formatNumber(precision_level, val), ""]
       }
       else {
