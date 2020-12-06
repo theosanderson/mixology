@@ -600,6 +600,7 @@ Vue.component('vol_and_unit', {
 
 
 var data = {
+  buffer_name:"test buffer",
   counter: 3,
   reagents_store: [],
     model: '',
@@ -626,6 +627,10 @@ var data = {
 
 data.final_volume.raw_number = 10
 data.final_volume.raw_unit = "ml"
+
+data.final_volume.raw_unit = "ml"
+
+
 
 
 var app = new Vue({
