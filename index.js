@@ -521,7 +521,7 @@ Vue.component('reagent_line', {
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="value.manual_mw = null" :manual_mw="value.manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume.computed_value_in_litres" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="value.manual_mw = null" :manual_mw="value.manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -536,23 +536,21 @@ Vue.component('conc_and_unit', {
   },
   data: function () {
     return {
-      raw_unit: null,
-      raw_number: null,
+  
 
       value: { number: null, type_per_litre: null, raw_unit:null, raw_number:null }
     }
   },
   methods: {
     updateValue() {
-      this.value.raw_number = this.raw_number
-      this.value.raw_unit = this.raw_unit 
+    
 
 
-      if (concentrations[this.raw_unit]) {
+      if (concentrations[this.value.raw_unit]) {
 
-        this.value.type_per_litre = concentrations[this.raw_unit].type_per_litre
-        this.value.number = this.raw_number * concentrations[this.raw_unit].value
-        console.log(JSON.stringify(this.value))
+        this.value.type_per_litre = concentrations[this.value.raw_unit].type_per_litre
+        this.value.number = this.value.raw_number * concentrations[this.value.raw_unit].value
+       
         this.$emit('input', this.value)
 
       }
@@ -567,12 +565,11 @@ Vue.component('conc_and_unit', {
     }
   },
   watch: {
-    raw_unit() { this.updateValue() },
-    raw_number() { this.updateValue() }
+    'value.raw_unit': function() { this.updateValue() },
+    'value.raw_number': function() { this.updateValue() }
   },
-  //unit_types = "g_per_litre", "litre_per_litre", "moles_per_litre"
 
-  template: `<div style="display:inline-block"><input type="number"  step="any" placeholder="conc." class="number" v-model="raw_number"></input><unit type="conc" v-model="raw_unit" /></div>`
+  template: `<div style="display:inline-block"><input type="number"  step="any" placeholder="conc." class="number" v-model="value.raw_number"></input><unit type="conc" v-model="value.raw_unit" /></div>`
 }
 );
 
@@ -613,20 +610,6 @@ Vue.component('vol_and_unit', {
 
 
 
-Vue.component('buffer_header', {
-  data: function () {
-    return {
-      count: 0
-    }
-  },
-  template: `<h4 contenteditable=true>Buffer title</h4>
-    `
-});
-
-
-
-
-
 
 var data = {
   counter: 3,
@@ -650,6 +633,10 @@ var data = {
   }
 
 }
+
+
+data.final_volume.raw_number = 10
+data.final_volume.raw_unit = "ml"
 
 
 var app = new Vue({
