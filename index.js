@@ -386,6 +386,11 @@ Vue.component('reagent', {
       console.log("updating content_name to ",this.temp_name)
       this.UpdateMW()
     }},
+    
+    'manual_mw':{ immediate:true,handler() {
+      
+      this.UpdateMW()
+    }},
     'content.mw': { immediate:true,handler() {
       console.log("mw_change", this.content.mw);
       this.$emit('input', this.content)
@@ -607,9 +612,8 @@ Vue.component('vol_and_unit', {
 var data = {
   buffer_name:"test buffer",
   counter: 4,
-  reagents_store: JSON.parse(
-    '[{"uid":3,"info":{"desired_concentration":{"number":0.1,"type_per_litre":"moles","raw_unit":"mM","raw_number":"100"},"manual_mw":null,"reagent_info":{"name":"carbon dioxide","mw":44.01},"needed_amount":{"mass_unit":"mg","chosen_input_method":"weight","vol_unit":"","stock_concentration":{"number":null,"type_per_litre":null}}}},{"uid":4,"info":{"desired_concentration":{"number":0.15,"type_per_litre":"moles","raw_unit":"mM","raw_number":"150"},"manual_mw":null,"reagent_info":{"name":"carbon dioxide","mw":44.01},"needed_amount":{"mass_unit":"","chosen_input_method":"volume","vol_unit":"ml","stock_concentration":{"number":0.5,"type_per_litre":"moles","raw_number":"0.5","raw_unit":"M"}}}}]'),
-    model: '',
+  reagents_store: [],
+   model: '',
   about_open: false,
   video_open:false,
   chosen: '',
@@ -675,14 +679,15 @@ app = new Vue({
         return true;
       };
 
-      let max_uid=0
+      var max_uid=0
 
       for (i in data.reagents_store){
-        max_uid = Math.max(data.reagents_store[i].uid, max_uid)
+        max_uid = Math.max(
+          data.reagents_store[i].uid, max_uid)
     }
 
       data.reagents_store.push(
-        {"uid":data.max_uid+1,"info":{"desired_concentration":{"number":null,"type_per_litre":null,"raw_unit":null,"raw_number":null},"manual_mw":null,"reagent_info":{"name":null,"mw":null},"needed_amount":{"mass_unit":null,"chosen_input_method":"weight","vol_unit":"","stock_concentration":{"raw_unit":null,"raw_number":null,"number":null,"type_per_litre":null}}}}
+        {"uid":(max_uid+1),"info":{"desired_concentration":{"number":null,"type_per_litre":null,"raw_unit":null,"raw_number":null},"manual_mw":null,"reagent_info":{"name":null,"mw":null},"needed_amount":{"mass_unit":null,"chosen_input_method":"weight","vol_unit":"","stock_concentration":{"raw_unit":null,"raw_number":null,"number":null,"type_per_litre":null}}}}
       
         );
       data.counter++;
