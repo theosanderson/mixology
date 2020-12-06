@@ -16,6 +16,7 @@ $.getJSON("masses.json", function (data) {
 });
 
 
+  startup();
 
 });
 
@@ -362,8 +363,9 @@ Vue.component('reagent', {
 
   data: function () {
     return {
+      temp_name :this.value.name,
       content:this.value,
-      name: "",
+      
       masses_data: masses_data,
       reagentsList() { return masses_keys; },
       filterFunction(a, b) {
@@ -371,34 +373,42 @@ Vue.component('reagent', {
       }
     }
   },
-  computed: {
-    mw: function () {
-      if (this.manual_mw != null) {
-        return this.manual_mw;
-      }
-      else if (this.reagentsList().includes(this.name)) {
-        return (masses_data[this.name]);
-      }
-      else {
-        return null;
-      }
-    }
-
-  },
+  
   watch: {
-    name: function (newer, older) {
+    'content.name':{ immediate:true,handler() {
       this.$emit('nameChange')
-      this.content.name = newer;
       this.$emit('input', this.content)
-    },
-    mw: function (newVal) {
-      console.log("mw_change");
-      this.content.mw = newVal;
+      console.log("name change")
+      this.UpdateMW()
+    }},
+    'temp_name':{ immediate:true,handler() {
+      this.content.name = this.temp_name;
+      console.log("updating content_name to ",this.temp_name)
+      this.UpdateMW()
+    }},
+    'content.mw': { immediate:true,handler() {
+      console.log("mw_change", this.content.mw);
       this.$emit('input', this.content)
-      setTimeout("run_thing('" + this.uid + "')", 1)
+    
     }
+},
+    
   },
   methods: {
+    UpdateMW(){
+      if (this.manual_mw != null) {
+        this.content.mw = this.manual_mw;
+      }
+      else if (this.reagentsList().includes(this.content.name)) {
+        this.content.mw =  (masses_data[this.content.name]);
+      }
+      else {
+        console.log('setting to null')
+        this.content.mw = null;
+      }
+      setTimeout("run_thing('" + this.uid + "')", 1)
+    
+    },
 
 
     Update() {
@@ -416,13 +426,13 @@ Vue.component('reagent', {
   ,
   template: `<div class="reagent" style="display:inline-block">
           <vue-simple-suggest v-on:select="Update"
-          v-model="name"
           placeholder="reagent"
+          v-model="content.name"
           :list="reagentsList"
           :filter="filterFunction"
           :filter-by-query="true">
-          <div class="mw" v-if="mw != null" :id="'mw_'+uid">(MW: {{mw}})</div>
-          <input autocomplete="off" v-model="content.name" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
+          <div class="mw" v-if="content.mw != null" :id="'mw_'+uid">(MW: {{content.mw}})</div>
+          <input autocomplete="off" v-model="temp_name" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
           <div :id="'hidden_'+uid" style="width: auto;
           display: inline-block;
           visibility: hidden;
@@ -584,8 +594,8 @@ Vue.component('vol_and_unit', {
     }
   },
   watch: {
-    'content.raw_unit':{immediate:false,handler() { this.updateValue() }},
-    'content.raw_number':{immediate:false,handler() { this.updateValue() }}
+    'content.raw_unit':{immediate:true,handler() { this.updateValue() }},
+    'content.raw_number':{immediate:true,handler() { this.updateValue() }}
   },
   template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="content.raw_number"></input><unit :title="unit_hint" type="vol" v-model="content.raw_unit" class="vol_unit"/></div>`
 }
@@ -597,7 +607,8 @@ Vue.component('vol_and_unit', {
 var data = {
   buffer_name:"test buffer",
   counter: 4,
-  reagents_store: JSON.parse('[{"uid":3,"info":{"desired_concentration":{"number":0.1,"type_per_litre":"moles","raw_unit":"mM","raw_number":"100"},"manual_mw":null,"reagent_info":{"name":"carbon dioxide","mw":44.01},"needed_amount":{"mass_unit":"mg","chosen_input_method":"weight","vol_unit":"","stock_concentration":{"number":null,"type_per_litre":null}}}}]'),
+  reagents_store: JSON.parse(
+    '[{"uid":3,"info":{"desired_concentration":{"number":0.1,"type_per_litre":"moles","raw_unit":"mM","raw_number":"100"},"manual_mw":null,"reagent_info":{"name":"carbon dioxide","mw":44.01},"needed_amount":{"mass_unit":"mg","chosen_input_method":"weight","vol_unit":"","stock_concentration":{"number":null,"type_per_litre":null}}}},{"uid":4,"info":{"desired_concentration":{"number":0.15,"type_per_litre":"moles","raw_unit":"mM","raw_number":"150"},"manual_mw":null,"reagent_info":{"name":"carbon dioxide","mw":44.01},"needed_amount":{"mass_unit":"","chosen_input_method":"volume","vol_unit":"ml","stock_concentration":{"number":0.5,"type_per_litre":"moles","raw_number":"0.5","raw_unit":"M"}}}}]'),
     model: '',
   about_open: false,
   video_open:false,
@@ -629,9 +640,13 @@ data.final_volume.raw_unit = "ml"
 data.final_volume.raw_unit = "ml"
 
 
+var app;
 
 
-var app = new Vue({
+function startup(){
+
+
+app = new Vue({
   el: '#app',
   data: data,
   computed: {
@@ -659,8 +674,15 @@ var app = new Vue({
       window.onbeforeunload = function () {
         return true;
       };
+
+      let max_uid=0
+
+      for (i in data.reagents_store){
+        max_uid = Math.max(data.reagents_store[i].uid, max_uid)
+    }
+
       data.reagents_store.push(
-        {"uid":data.counter,"info":{"desired_concentration":{"number":null,"type_per_litre":null,"raw_unit":null,"raw_number":null},"manual_mw":null,"reagent_info":{"name":null,"mw":null},"needed_amount":{"mass_unit":null,"chosen_input_method":"weight","vol_unit":"","stock_concentration":{"number":null,"type_per_litre":null}}}}
+        {"uid":data.max_uid+1,"info":{"desired_concentration":{"number":null,"type_per_litre":null,"raw_unit":null,"raw_number":null},"manual_mw":null,"reagent_info":{"name":null,"mw":null},"needed_amount":{"mass_unit":null,"chosen_input_method":"weight","vol_unit":"","stock_concentration":{"raw_unit":null,"raw_number":null,"number":null,"type_per_litre":null}}}}
       
         );
       data.counter++;
@@ -670,3 +692,5 @@ var app = new Vue({
   }
 
 });
+
+}
