@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
 
 <head>
@@ -79,7 +79,7 @@
 
         <div>
             <transition-group name="list" tag="p">
-                <reagent_line :final_volume="final_volume" @deleteme="onDeleteMe" :key="uid" v-for="uid in uids"
+                <reagent_line :final_volume="final_volume.computed_value_in_litres" @deleteme="onDeleteMe" :key="uid" v-for="uid in uids"
                     :uid="uid"></reagent_line>
             </transition-group>
         </div>
@@ -88,7 +88,7 @@
         <br>
 
 
-        <button :disabled="final_volume==null" class="ttip" :title="compoundTitle" v-on:click="AddCompound()"><i
+        <button :disabled="final_volume.computed_value_in_litres==null" class="ttip" :title="compoundTitle" v-on:click="AddCompound()"><i
                 class="far fa-plus-square"></i> add a compound</button>
 
         <div class="bottom_menu">

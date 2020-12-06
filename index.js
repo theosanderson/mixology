@@ -466,8 +466,8 @@ Vue.component('reagent_line', {
   props: ['uid', 'final_volume'],
   data: function () {
     return {
-      value:{reagent_info: { name: '', mw: null }},
-      manual_mw: null,
+      value:{manual_mw: null,reagent_info: { name: '', mw: null }},
+      
       count: 0,
       hover: false,
       
@@ -514,14 +514,14 @@ Vue.component('reagent_line', {
     <modal :name="'settings_modal_'+uid">
    <h3> {{displayName}}</h3>
           
-          Custom molecular mass: <input type="number"  step="any"  placeholder="0.00" v-model="manual_mw"  class="classic"/>
+          Custom molecular mass: <input type="number"  step="any"  placeholder="0.00" v-model="value.manual_mw"  class="classic"/>
        <div><button @click="unmodalise_settings()">OK</button></div>
           </modal>
     <modal :name="'trash_modal_'+uid">
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume.computed_value_in_litres" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="value.manual_mw = null" :manual_mw="value.manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume.computed_value_in_litres" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -581,24 +581,22 @@ Vue.component('vol_and_unit', {
   props: ["num_hint", "unit_hint"],
   data: function () {
     return {
-      raw_unit: null,
-      raw_number: null,
+  
       value: {raw_unit:null, raw_number:null, computed_value_in_litres:null} // in_litres
     }
   },
   methods: {
     updateValue() {
-      this.value.raw_unit = this.raw_unit
-      this.value.raw_number = this.raw_number
 
-      unit_details = volumes[this.raw_unit]
+
+      unit_details = volumes[this.value.raw_unit]
       if (unit_details) {
-        this.value.computed_value_in_litres = this.raw_number * volumes[this.raw_unit]
+        this.value.computed_value_in_litres = this.value.raw_number * volumes[this.value.raw_unit]
         this.$emit('input', this.value)
       }
       else {
 
-        console.log("invalid_vol_unit")
+        
         this.value.computed_value_in_litres = null;
         this.$emit('input', this.value)
       }
@@ -606,10 +604,10 @@ Vue.component('vol_and_unit', {
     }
   },
   watch: {
-    raw_unit() { this.updateValue() },
-    raw_number() { this.updateValue() }
+    'value.raw_unit':function() { this.updateValue() },
+    'value.raw_number':function() { this.updateValue() }
   },
-  template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="raw_number"></input><unit :title="unit_hint" type="vol" v-model="raw_unit" class="vol_unit"/></div>`
+  template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="value.raw_number"></input><unit :title="unit_hint" type="vol" v-model="value.raw_unit" class="vol_unit"/></div>`
 }
 );
 
@@ -682,7 +680,9 @@ var app = new Vue({
       window.onbeforeunload = function () {
         return true;
       };
-      data.uids.push(data.counter);
+      data.uids.push(
+        {'uid':data.counter}
+        );
       data.counter++;
     }
 
