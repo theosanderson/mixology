@@ -302,13 +302,11 @@ Vue.component('needed_amount', {
 
 
 Vue.component('unit', {
-  props: {
-    value: null,
-    type: null
-  },
+  props: ['value','type'],
   data: function () {
     return {
-      unit: "",
+      content: this.value
+      
 
     }
   },
@@ -334,7 +332,7 @@ Vue.component('unit', {
   },
   computed: {
     invalid_unit() {
-      if (this.list_of_units().includes(this.unit)) {
+      if (this.list_of_units().includes(this.content)) {
         return false;
       }
       else {
@@ -343,7 +341,7 @@ Vue.component('unit', {
     }
   },
   watch: {
-    unit: function (value) {
+    content: function (value) {
 
       this.$emit('input', value)
 
@@ -353,7 +351,7 @@ Vue.component('unit', {
   },
   template: `<div class="unit" style="display:inline-block">
       <vue-simple-suggest :filter="filterFunction"
-      v-model="unit" :class="{invalid_unit:invalid_unit}"
+      v-model="content" :class="{invalid_unit:invalid_unit}"
       :placeholder="type+' unit'"
       :list="list_of_units()"
       :filter-by-query="true" class="unit_input">
@@ -575,11 +573,10 @@ Vue.component('conc_and_unit', {
 
 
 Vue.component('vol_and_unit', {
-  props: ["num_hint", "unit_hint"],
+  props: ["num_hint", "unit_hint",'value'],
   data: function () {
     return {
   
-      value: {raw_unit:null, raw_number:null, computed_value_in_litres:null} // in_litres
     }
   },
   methods: {
