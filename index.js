@@ -520,13 +520,12 @@ Vue.component('reagent_line', {
 });
 
 Vue.component('conc_and_unit', {
-  props: {
-  },
+  props: ['value'],
   data: function () {
     return {
-  
+  //{ number: null, type_per_litre: null, raw_unit:null, raw_number:null }
 
-      value: { number: null, type_per_litre: null, raw_unit:null, raw_number:null }
+      content: this.value
     }
   },
   methods: {
@@ -601,8 +600,8 @@ Vue.component('vol_and_unit', {
 
 var data = {
   buffer_name:"test buffer",
-  counter: 3,
-  reagents_store: [],
+  counter: 4,
+  reagents_store: JSON.parse('[{"uid":3,"info":{"desired_concentration":{"number":0.1,"type_per_litre":"moles","raw_unit":"mM","raw_number":"100"},"manual_mw":null,"reagent_info":{"name":"carbon dioxide","mw":44.01},"needed_amount":{"mass_unit":"mg","chosen_input_method":"weight","vol_unit":"","stock_concentration":{"number":null,"type_per_litre":null}}}}]'),
     model: '',
   about_open: false,
   video_open:false,
