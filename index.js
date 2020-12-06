@@ -145,6 +145,9 @@ Vue.component('needed_amount', {
   ,
   data: function () {
     return {
+      value:{
+        // TODO
+      },
       mass_unit: "",
       count: 0,
       chosen_input_method: 'weight',
@@ -463,10 +466,11 @@ Vue.component('reagent_line', {
   props: ['uid', 'final_volume'],
   data: function () {
     return {
+      value:{reagent_info: { name: '', mw: null }},
       manual_mw: null,
       count: 0,
       hover: false,
-      reagent_info: { name: '', mw: null },
+      
       desired_concentration: { number: null, type_per_litre: null },
 
 
@@ -495,11 +499,11 @@ Vue.component('reagent_line', {
   },
   computed: {
     displayName() {
-      if (this.reagent_info.name == '') {
+      if (this.value.reagent_info.name == '') {
         return 'unnamed chemical';
       }
       else {
-        return this.reagent_info.name;
+        return this.value.reagent_info.name;
       }
     }
   },
@@ -517,7 +521,7 @@ Vue.component('reagent_line', {
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="reagent_info" /><needed_amount :mw="reagent_info.mw" :final_volume="final_volume.computed_value_in_litres" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="value.reagent_info" /><needed_amount :mw="value.reagent_info.mw" :final_volume="final_volume.computed_value_in_litres" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -535,11 +539,13 @@ Vue.component('conc_and_unit', {
       raw_unit: null,
       raw_number: null,
 
-      value: { number: null, type_per_litre: null }
+      value: { number: null, type_per_litre: null, raw_unit:null, raw_number:null }
     }
   },
   methods: {
     updateValue() {
+      this.value.raw_number = this.raw_number
+      this.value.raw_unit = this.raw_unit 
 
 
       if (concentrations[this.raw_unit]) {
