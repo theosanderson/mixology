@@ -4,7 +4,7 @@ Vue.use(window["vue-js-modal"].default);
 masses_data = Array();
 masses_keys = [];
 question_marks = '???'
-precision_level = 5;
+precision_level = 4;
 
 mw_message = "Unable to calculate the required value: you need to add a molecular weight to this reagent to make this conversion. Either choose a reagent from the suggestion list or click on the cog icon.";
 
