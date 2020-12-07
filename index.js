@@ -381,7 +381,7 @@ Vue.component('unit', {
       :placeholder="type+' unit'"
       :list="list_of_units()"
       :filter-by-query="true"  class="unit_input" ref="unit_input">
-      <input :placeholder="type+' unit'" type="search" autocomplete="off" v-model="content" v-on:keydown="unitKeyDown">
+      <input :placeholder="type+' unit'" type="text" autocomplete="off" v-model="content" v-on:keydown="unitKeyDown">
     </vue-simple-suggest>
       </div>`});
 
