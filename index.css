@@ -97,6 +97,10 @@ div.unit {
 	padding-left: 0.5em;
 }
 
+div.unit div div input{
+	width:100%;
+}
+
 div.reagent {
 	width: 300px;
 }
@@ -339,7 +343,7 @@ a.titler{text-decoration: none;}
 	transition: opacity .15s;
   }
   
-  .vol_unit{width:60px !important;}
+  .vol_unit {width:60px !important;}
   .vol_unit2{width:60px !important;}
 
   div.overlay {
