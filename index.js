@@ -77,6 +77,14 @@ function run_thing(uid) {
 masses = { "g": 1, "mg": 1e-3, "kg": 1e3, "ug": 1e-6, "ng": 1e-9 }
 volumes = { "l": 1, "ml": 1e-3, "ul": 1e-6, "nl": 1e-9, "litres": 1, "litre": 1, "liters": 1, "liter": 1 }
 
+compatible_types = {
+  "grams" : ["grams","moles"],
+  "moles" : ["grams","moles"],
+  "litres" : ["litres"],
+  "x" : ["x"],
+  "units" : ["units"]
+
+}
 concentrations = {};
 
 for (const [mass_key, mass_value] of Object.entries(masses)) {
@@ -305,14 +313,14 @@ Vue.component('needed_amount', {
   <div class="needed_number" v-tooltip="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit key="mass" type="mass"  v-model="content.mass_unit"/>
   </div>
   <div style="display:inline-block"  v-if="input_method=='volume'">
-  <div class="needed_number" v-tooltip="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit key="vol" type="vol"  v-model="content.vol_unit" class="vol_unit2"/> of <conc_and_unit v-model="content.stock_concentration" /> stock
+  <div class="needed_number" v-tooltip="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit key="vol" type="vol"  v-model="content.vol_unit" class="vol_unit2"/> of <conc_and_unit :type_per_litre="desired_concentration.type_per_litre" v-model="content.stock_concentration" /> stock
   </div>
   </div>`
 });
 
 
 Vue.component('unit', {
-  props: ['value','type'],
+  props: ['value','type','type_per_litre'],
   data: function () {
     return {
       content: this.value
@@ -341,9 +349,25 @@ Vue.component('unit', {
     filterFunction(a, b) {
       return a.toLowerCase().replace(" ", "").startsWith(b.toLowerCase().replace(" ", ""));
     },
+    
+
+
+  },
+  computed: {
     list_of_units() {
       if (this.type == "conc") {
-        return (sorted_concentrations);
+        if(this.type_per_litre)
+          { var filtered = Object.fromEntries(Object.entries(concentrations).filter(([k,v]) => compatible_types[this.type_per_litre].includes(v.type_per_litre))); }
+          else{
+            var filtered = concentrations;
+          }
+        
+        var the_keys = Object.keys(filtered).sort();
+         
+          
+
+          return the_keys;
+      
       }
       else if (this.type == "mass") {
         return (sorted_masses);
@@ -352,13 +376,10 @@ Vue.component('unit', {
         return (sorted_volumes);
       }
 
-    }
-
-
-  },
-  computed: {
+      
+    },
     invalid_unit() {
-      if (this.list_of_units().includes(this.content)) {
+      if (this.list_of_units.includes(this.content)) {
         return false;
       }
       else {
@@ -367,6 +388,18 @@ Vue.component('unit', {
     }
   },
   watch: {
+    list_of_units: function(value){
+
+      if(this.type_per_litre){
+      if (this.list_of_units.length==1){
+        this.content=this.list_of_units[0];
+      }
+    
+        if(!this.list_of_units.includes(this.content)){
+          this.content="";
+        }
+      }
+    },
     content: function (value) {
 
       this.$emit('input', value)
@@ -379,7 +412,7 @@ Vue.component('unit', {
       <vue-simple-suggest :filter="filterFunction"
       v-model="content" :class="{invalid_unit:invalid_unit}"
       :placeholder="type+' unit'"
-      :list="list_of_units()"
+      :list="list_of_units"
       :filter-by-query="true"  class="unit_input" ref="unit_input">
       <input :placeholder="type+' unit'" type="text" autocomplete="off" v-model="content" v-on:keydown="unitKeyDown">
     </vue-simple-suggest>
@@ -556,7 +589,7 @@ Vue.component('reagent_line', {
 });
 
 Vue.component('conc_and_unit', {
-  props: ['value'],
+  props: ['value','type_per_litre'],
   data: function () {
     return {
   //{ number: null, type_per_litre: null, raw_unit:null, raw_number:null }
@@ -621,7 +654,7 @@ Vue.component('conc_and_unit', {
     'value.raw_number': function() { this.updateValue() }
   },
 
-  template: `<div style="display:inline-block"><input ref="number" type="number" v-on:keypress="numberKeypress" step="any" placeholder="conc." class="number" v-model="value.raw_number"></input><unit @backspace_too_far="onbackspacetoofar" ref="unit" type="conc" v-model="value.raw_unit" /></div>`
+  template: `<div style="display:inline-block"><input ref="number" type="number" v-on:keypress="numberKeypress" step="any" placeholder="conc." class="number" v-model="value.raw_number"></input><unit :type_per_litre="type_per_litre" @backspace_too_far="onbackspacetoofar" ref="unit" type="conc" v-model="value.raw_unit" /></div>`
 }
 );
 
