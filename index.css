@@ -353,3 +353,7 @@ h3.title {
 	left:       0; 
 	position:   fixed; 
   }
+
+  .note{width:90%;font-size:20px; border:0px;}
+
+  .note_div{margin-top:5px;margin-bottom:5px;}

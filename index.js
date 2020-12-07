@@ -377,7 +377,7 @@ Vue.component('reagent', {
   },
   
   watch: {
-    'content.name':{ immediate:true,handler() {
+    'content.name':{ immediate:false,handler() {
       this.$emit('nameChange')
       this.$emit('input', this.content)
       console.log("name change")
@@ -610,6 +610,7 @@ var data = {
   times_permaclicked:0,
   counter: 4,
   reagents_store: [],
+  notes_store: [],
    model: '',
   about_open: false,
   video_open:false,
@@ -629,7 +630,23 @@ var data = {
       data.reagents_store.splice(to_delete, 1);
   
     }
+  },
+  deleteNote(x) {
+    console.log(this)
+    console.log(x)
+    to_delete = -1;
+    for (i in data.notes_store){
+        if(data.notes_store[i].uid==x){
+          to_delete = i
+        }
+    }
+    console.log(to_delete)
+    if (to_delete > -1) {
+      data.notes_store.splice(to_delete, 1);
+  
+    }
   }
+
 
 }
 
@@ -659,8 +676,9 @@ if (!doc.exists) {
 
 if(new_data){
 
-  data['final_volume'] = new_data['final_vol']
+  data['final_volume'] = new_data['final_volume']
   data['reagents_store'] = new_data['reagents_store']
+  data['notes_store'] = new_data['notes_store']
   data['buffer_name'] = new_data['buffer_name']
 }
 
@@ -711,6 +729,22 @@ app = new Vue({
       
         );
       data.counter++;
+    },
+    AddNote() {
+      
+
+      var max_uid=0
+
+      for (i in data.notes_store){
+        max_uid = Math.max(
+          data.notes_store[i].uid, max_uid)
+    }
+
+      data.notes_store.push(
+        {"uid":(max_uid+1),text:'',hover:false}
+      
+        );
+      data.counter++;
     }
 
 
@@ -742,17 +776,18 @@ var db = firebase.firestore();
 async function permalink(){
 
     console.log('test')
-    to_store = {"final_vol":data.final_volume, "buffer_name":data.buffer_name, "reagents_store":data.reagents_store};
+    to_store = {"notes_store":data.notes_store,"final_volume":data.final_volume, "buffer_name":data.buffer_name, "reagents_store":data.reagents_store};
     json = JSON.stringify(to_store)
     const data_for_db = {
       json: json,
+      version:1
     
     };
     
     id = makeid(10);
     // Add a new document in collection "cities" with ID 'LA'
     const res =  await db.collection('recipes').doc(id).set(data_for_db) ;
-    window.onbeforeunload = null;
+    window. onbeforeunload = null;
     
     console.log("/?recipe="+id);
     window.location.replace("/?recipe="+id);
