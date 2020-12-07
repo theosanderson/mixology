@@ -159,13 +159,13 @@ Vue.component('needed_amount', {
       }
       if (this.content.chosen_input_method == "weight") {
         this.content.chosen_input_method = "volume"
-        this.content.vol_unit = ""
-        this.content.mass_unit = ""
+       // this.content.vol_unit = ""
+        //his.content.mass_unit = ""
       }
       else {
         this.content.chosen_input_method = "weight"
-        this.content.mass_unit = ""
-        this.content.vol_unit = ""
+        //this.content.mass_unit = ""
+        //this.content.vol_unit = ""
       }
     }
   },
