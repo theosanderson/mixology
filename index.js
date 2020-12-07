@@ -388,18 +388,23 @@ Vue.component('unit', {
     }
   },
   watch: {
-    list_of_units: function(value){
+    list_of_units:{ immediate:true ,handler(value){
+      console.log("")
 
       if(this.type_per_litre){
-      if (this.list_of_units.length==1){
+      if (this.list_of_units.length==1 & this.content != this.list_of_units[0]){
+        
         this.content=this.list_of_units[0];
+        this.$emit("autoset");
+
+        
       }
     
         if(!this.list_of_units.includes(this.content)){
           this.content="";
         }
       }
-    },
+    }},
     content: function (value) {
 
       this.$emit('input', value)
@@ -654,7 +659,7 @@ Vue.component('conc_and_unit', {
     'value.raw_number': function() { this.updateValue() }
   },
 
-  template: `<div style="display:inline-block"><input ref="number" type="number" v-on:keypress="numberKeypress" step="any" placeholder="conc." class="number" v-model="value.raw_number"></input><unit :type_per_litre="type_per_litre" @backspace_too_far="onbackspacetoofar" ref="unit" type="conc" v-model="value.raw_unit" /></div>`
+  template: `<div style="display:inline-block"><input ref="number" type="number" v-on:keypress="numberKeypress" step="any" placeholder="conc." class="number" v-model="value.raw_number"></input><unit @autoset="value.raw_number=''" :type_per_litre="type_per_litre" @backspace_too_far="onbackspacetoofar" ref="unit" type="conc" v-model="value.raw_unit" /></div>`
 }
 );
 
