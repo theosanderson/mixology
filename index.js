@@ -1,3 +1,4 @@
+﻿
 
 Vue.use(window["vue-js-modal"].default);
 
@@ -15,7 +16,9 @@ $.getJSON("masses.json", function (data) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
 });
 
-
+  
+  startup();
+  
 
 });
 
@@ -138,18 +141,15 @@ console.log(concentrations);
 
 Vue.component('needed_amount', {
   props:
-    ['final_volume', 'mw', 'desired_concentration']
+    ['final_volume', 'mw', 'desired_concentration','value']
 
 
 
   ,
+  
   data: function () {
     return {
-      mass_unit: "",
-      count: 0,
-      chosen_input_method: 'weight',
-      vol_unit: "",
-      stock_concentration: { number: null, type_per_litre: null }
+      content:this.value,
     }
   },
   methods: {
@@ -157,15 +157,15 @@ Vue.component('needed_amount', {
       if (this.desired_concentration_is_volumetric) {
         alert("Since your desired concentration is specified in volumetric units, you must measure out a volume.")
       }
-      if (this.chosen_input_method == "weight") {
-        this.chosen_input_method = "volume"
-        this.vol_unit = ""
-        this.mass_unit = ""
+      if (this.content.chosen_input_method == "weight") {
+        this.content.chosen_input_method = "volume"
+        this.content.vol_unit = ""
+        this.content.mass_unit = ""
       }
       else {
-        this.chosen_input_method = "weight"
-        this.mass_unit = ""
-        this.vol_unit = ""
+        this.content.chosen_input_method = "weight"
+        this.content.mass_unit = ""
+        this.content.vol_unit = ""
       }
     }
   },
@@ -176,7 +176,7 @@ Vue.component('needed_amount', {
       if (this.desired_concentration_is_volumetric) {
         return "volume"
       }
-      return this.chosen_input_method;
+      return this.content.chosen_input_method;
     },
     desired_concentration_is_volumetric: function () {
       if ([null, "grams", "moles"].includes(this.desired_concentration.type_per_litre)) {
@@ -187,26 +187,6 @@ Vue.component('needed_amount', {
       }
     }
     ,
-    available_input_methods: function () {
-      if (this.desired_concentration.type_per_litre == "grams") {
-        return ["weight", "volume"]
-      }
-      else if (this.desired_concentration.type_per_litre == "litres") {
-        return ["volume"]
-      }
-      else if (this.desired_concentration.type_per_litre == "moles") {
-        if (this.mw) {
-          return ["weight", "volume"]
-        }
-        else {
-          return ['volume']
-        }
-      }
-      else {
-        return [];
-      }
-
-    },
 
 
     needed_amount_mass() {
@@ -214,7 +194,7 @@ Vue.component('needed_amount', {
         return [question_marks, "Unable to calculate the required value: please enter a valid total volume above"]
       }
 
-      if (masses[this.mass_unit] == undefined) {
+      if (masses[this.content.mass_unit] == undefined) {
         return [question_marks, "Unable to calculate the required value: please enter a valid mass unit to the right (e.g. mg)"]
       }
 
@@ -223,15 +203,15 @@ Vue.component('needed_amount', {
       }
       if (this.desired_concentration.type_per_litre == "grams") {
 
-        mass_unit_value = masses[this.mass_unit];
+        mass_unit_content = masses[this.content.mass_unit];
 
-        val = this.final_volume * this.desired_concentration.number / mass_unit_value
+        val = this.final_volume * this.desired_concentration.number / mass_unit_content
         return [formatNumber(precision_level, val), ""]
       }
       else if (this.mw > 0 & this.desired_concentration.type_per_litre == "moles") {
 
-        mass_unit_value = masses[this.mass_unit];
-        val = this.final_volume * this.desired_concentration.number * this.mw / mass_unit_value
+        mass_unit_content = masses[this.content.mass_unit];
+        val = this.final_volume * this.desired_concentration.number * this.mw / mass_unit_content
         return [formatNumber(precision_level, val), ""]
       }
       else {
@@ -246,7 +226,7 @@ Vue.component('needed_amount', {
         return [question_marks, "Unable to calculate the required value: please enter a valid total volume above"]
       }
 
-      if (volumes[this.vol_unit] == undefined) {
+      if (volumes[this.content.vol_unit] == undefined) {
         return [question_marks, "Unable to calculate the required value: please enter a valid volume unit to the right (e.g. ml)"]
       }
 
@@ -254,32 +234,32 @@ Vue.component('needed_amount', {
         return [question_marks, "Unable to calculate the required value: please enter a valid desired concentration"]
       }
 
-      if (!this.stock_concentration.number) {
+      if (!this.content.stock_concentration.number) {
         return [question_marks, "Unable to calculate the required value: please enter a valid stock concentration to the right"]
       }
 
 
-      if (this.desired_concentration.type_per_litre == this.stock_concentration.type_per_litre) {
+      if (this.desired_concentration.type_per_litre == this.content.stock_concentration.type_per_litre) {
         
-        vol_unit_value = volumes[this.vol_unit];
-        val = this.final_volume * this.desired_concentration.number / (this.stock_concentration.number * vol_unit_value);
+        vol_unit_content = volumes[this.content.vol_unit];
+        val = this.final_volume * this.desired_concentration.number / (this.content.stock_concentration.number * vol_unit_content);
         return [formatNumber(precision_level, val), ""]
 
       }
-      else if (this.desired_concentration.type_per_litre == "moles" & this.stock_concentration.type_per_litre == "grams") {
+      else if (this.desired_concentration.type_per_litre == "moles" & this.content.stock_concentration.type_per_litre == "grams") {
         if (!this.mw) {
           return [question_marks, mw_message]
         }
-        vol_unit_value = volumes[this.vol_unit];
-        val = this.final_volume * this.desired_concentration.number / (this.stock_concentration.number * vol_unit_value / this.mw);
+        vol_unit_content = volumes[this.content.vol_unit];
+        val = this.final_volume * this.desired_concentration.number / (this.content.stock_concentration.number * vol_unit_content / this.mw);
         return [formatNumber(precision_level, val), ""]
       }
-      else if (this.desired_concentration.type_per_litre == "grams" & this.stock_concentration.type_per_litre == "moles") {
+      else if (this.desired_concentration.type_per_litre == "grams" & this.content.stock_concentration.type_per_litre == "moles") {
         if (!this.mw) {
           return [question_marks, mw_message]
         }
-        vol_unit_value = volumes[this.vol_unit];
-        val = this.final_volume * this.desired_concentration.number  / (this.stock_concentration.number * vol_unit_value* this.mw);
+        vol_unit_content = volumes[this.content.vol_unit];
+        val = this.final_volume * this.desired_concentration.number  / (this.content.stock_concentration.number * vol_unit_content* this.mw);
         return [formatNumber(precision_level, val), ""]
       }
       else {
@@ -301,26 +281,31 @@ Vue.component('needed_amount', {
     }
 
   },
+  watch:{content: {
+    handler(val){
+     this.$emit('input', this.content)
+    },
+    deep: true
+ }
+},
   template: `<div style="display:inline-block" class="computed">
   <div class="button_holder_flask"><i class="fas change-input-type-button toggler" :class="input_type_button_image" v-on:click="toggleType()" title="Toggle between measuring out mass and volume"></i></div>
   <div   style="display:inline-block" v-if="input_method=='weight'">
-  <div class="needed_number" v-tooltip="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit key="mass" type="mass"  v-model="mass_unit"/>
+  <div class="needed_number" v-tooltip="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit key="mass" type="mass"  v-model="content.mass_unit"/>
   </div>
   <div style="display:inline-block"  v-if="input_method=='volume'">
-  <div class="needed_number" v-tooltip="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit key="vol" type="vol"  v-model="vol_unit" class="vol_unit2"/> of <conc_and_unit v-model="stock_concentration" /> stock
+  <div class="needed_number" v-tooltip="needed_amount_volume[1]">{{needed_amount_volume[0]}}</div><unit key="vol" type="vol"  v-model="content.vol_unit" class="vol_unit2"/> of <conc_and_unit v-model="content.stock_concentration" /> stock
   </div>
   </div>`
 });
 
 
 Vue.component('unit', {
-  props: {
-    value: null,
-    type: null
-  },
+  props: ['value','type'],
   data: function () {
     return {
-      unit: "",
+      content: this.value
+      
 
     }
   },
@@ -346,7 +331,7 @@ Vue.component('unit', {
   },
   computed: {
     invalid_unit() {
-      if (this.list_of_units().includes(this.unit)) {
+      if (this.list_of_units().includes(this.content)) {
         return false;
       }
       else {
@@ -355,16 +340,17 @@ Vue.component('unit', {
     }
   },
   watch: {
-    unit: function (value) {
+    content: function (value) {
 
       this.$emit('input', value)
 
 
     }
+    
   },
   template: `<div class="unit" style="display:inline-block">
       <vue-simple-suggest :filter="filterFunction"
-      v-model="unit" :class="{invalid_unit:invalid_unit}"
+      v-model="content" :class="{invalid_unit:invalid_unit}"
       :placeholder="type+' unit'"
       :list="list_of_units()"
       :filter-by-query="true" class="unit_input">
@@ -375,19 +361,13 @@ Vue.component('unit', {
 
 
 Vue.component('reagent', {
-  props: {
-    uid: '',
-    manual_mw: null,
-
-  },
+  props: ['uid','manual_mw','value'],
 
   data: function () {
     return {
-      value: {
-        name: '',
-        mw: null
-      },
-      name: "",
+      
+      content:this.value,
+      
       masses_data: masses_data,
       reagentsList() { return masses_keys; },
       filterFunction(a, b) {
@@ -395,34 +375,42 @@ Vue.component('reagent', {
       }
     }
   },
-  computed: {
-    mw: function () {
-      if (this.manual_mw != null) {
-        return this.manual_mw;
-      }
-      else if (this.reagentsList().includes(this.name)) {
-        return (masses_data[this.name]);
-      }
-      else {
-        return null;
-      }
-    }
-
-  },
+  
   watch: {
-    name: function (newer, older) {
+    'content.name':{ immediate:false,handler() {
       this.$emit('nameChange')
-      this.value.name = newer;
-      this.$emit('input', this.value)
-    },
-    mw: function (newVal) {
-      console.log("mw_change");
-      this.value.mw = newVal;
-      this.$emit('input', this.value)
-      setTimeout("run_thing('" + this.uid + "')", 1)
+      this.$emit('input', this.content)
+      console.log("name change")
+      this.UpdateMW()
+    }},
+    
+    'manual_mw':{ immediate:true,handler() {
+      
+      this.UpdateMW()
+    }},
+    'content.mw': { immediate:true,handler() {
+      console.log("mw_change", this.content.mw);
+      this.$emit('input', this.content)
+    
     }
+},
+    
   },
   methods: {
+    UpdateMW(){
+      if (this.manual_mw != null) {
+        this.content.mw = this.manual_mw;
+      }
+      else if (this.reagentsList().includes(this.content.name)) {
+        this.content.mw =  (masses_data[this.content.name]);
+      }
+      else {
+        console.log('setting to null')
+        this.content.mw = null;
+      }
+      setTimeout("run_thing('" + this.uid + "')", 1)
+    
+    },
 
 
     Update() {
@@ -440,13 +428,13 @@ Vue.component('reagent', {
   ,
   template: `<div class="reagent" style="display:inline-block">
           <vue-simple-suggest v-on:select="Update"
-          v-model="name"
           placeholder="reagent"
+          v-model="content.name"
           :list="reagentsList"
           :filter="filterFunction"
           :filter-by-query="true">
-          <div class="mw" v-if="mw != null" :id="'mw_'+uid">(MW: {{mw}})</div>
-          <input autocomplete="off" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
+          <div class="mw" v-if="content.mw != null" :id="'mw_'+uid">(MW: {{content.mw}})</div>
+          <input v-model="content.name" autocomplete="off" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
           <div :id="'hidden_'+uid" style="width: auto;
           display: inline-block;
           visibility: hidden;
@@ -460,14 +448,17 @@ Vue.component('reagent', {
 
 
 Vue.component('reagent_line', {
-  props: ['uid', 'final_volume'],
+  props: ['uid', 'final_volume','value'],
   data: function () {
     return {
-      manual_mw: null,
+      content:this.value
+    
+    ,
+      
       count: 0,
       hover: false,
-      reagent_info: { name: '', mw: null },
-      desired_concentration: { number: null, type_per_litre: null },
+      
+      
 
 
       modalise() {
@@ -495,14 +486,23 @@ Vue.component('reagent_line', {
   },
   computed: {
     displayName() {
-      if (this.reagent_info.name == '') {
+      if (this.content.reagent_info.name == '') {
         return 'unnamed chemical';
       }
       else {
-        return this.reagent_info.name;
+        return this.content.reagent_info.name;
       }
     }
   },
+  watch: {
+    content: {
+       handler(val){
+        this.$emit('input', this.content)
+       },
+       deep: true
+    }
+  },
+
 
   template: `
 <div class="reagent_line" @mouseover="hover = true"
@@ -510,14 +510,14 @@ Vue.component('reagent_line', {
     <modal :name="'settings_modal_'+uid">
    <h3> {{displayName}}</h3>
           
-          Custom molecular mass: <input type="number"  step="any"  placeholder="0.00" v-model="manual_mw"  class="classic"/>
+          Custom molecular mass: <input type="number"  step="any"  placeholder="0.00" v-model="content.manual_mw"  class="classic"/>
        <div><button @click="unmodalise_settings()">OK</button></div>
           </modal>
     <modal :name="'trash_modal_'+uid">
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="desired_concentration"/><reagent @nameChange="manual_mw = null" :manual_mw="manual_mw" :uid="uid" v-model="reagent_info" /><needed_amount :mw="reagent_info.mw" :final_volume="final_volume" :desired_concentration="desired_concentration"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="content.desired_concentration"/><reagent @nameChange="content.manual_mw = null" :manual_mw="content.manual_mw" :uid="uid" v-model="content.reagent_info" /><needed_amount :mw="content.reagent_info.mw" :final_volume="final_volume" :desired_concentration="content.desired_concentration" v-model="content.needed_amount"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
@@ -528,25 +528,24 @@ Vue.component('reagent_line', {
 });
 
 Vue.component('conc_and_unit', {
-  props: {
-  },
+  props: ['value'],
   data: function () {
     return {
-      raw_unit: null,
-      raw_number: null,
+  //{ number: null, type_per_litre: null, raw_unit:null, raw_number:null }
 
-      value: { number: null, type_per_litre: null }
+      content: this.value
     }
   },
   methods: {
     updateValue() {
+    
 
 
-      if (concentrations[this.raw_unit]) {
+      if (concentrations[this.value.raw_unit]) {
 
-        this.value.type_per_litre = concentrations[this.raw_unit].type_per_litre
-        this.value.number = this.raw_number * concentrations[this.raw_unit].value
-        console.log(JSON.stringify(this.value))
+        this.value.type_per_litre = concentrations[this.value.raw_unit].type_per_litre
+        this.value.number = this.value.raw_number * concentrations[this.value.raw_unit].value
+       
         this.$emit('input', this.value)
 
       }
@@ -561,97 +560,145 @@ Vue.component('conc_and_unit', {
     }
   },
   watch: {
-    raw_unit() { this.updateValue() },
-    raw_number() { this.updateValue() }
+    'value.raw_unit': function() { this.updateValue() },
+    'value.raw_number': function() { this.updateValue() }
   },
-  //unit_types = "g_per_litre", "litre_per_litre", "moles_per_litre"
 
-  template: `<div style="display:inline-block"><input type="number"  step="any" placeholder="conc." class="number" v-model="raw_number"></input><unit type="conc" v-model="raw_unit" /></div>`
+  template: `<div style="display:inline-block"><input type="number"  step="any" placeholder="conc." class="number" v-model="value.raw_number"></input><unit type="conc" v-model="value.raw_unit" /></div>`
 }
 );
 
 
 Vue.component('vol_and_unit', {
-  props: ["num_hint", "unit_hint"],
+  props: ["num_hint", "unit_hint",'value'],
   data: function () {
     return {
-      raw_unit: null,
-      raw_number: null,
-      value: null // in_litres
+      content: this.value
+  
     }
   },
   methods: {
     updateValue() {
 
-      unit_details = volumes[this.raw_unit]
+
+      unit_details = volumes[this.content.raw_unit]
       if (unit_details) {
-        this.value = this.raw_number * volumes[this.raw_unit]
-        this.$emit('input', this.value)
+        this.content.computed_value_in_litres = this.content.raw_number * volumes[this.content.raw_unit]
+        this.$emit('input', this.content)
       }
       else {
 
-        console.log("invalid_vol_unit")
-        this.value = null;
-        this.$emit('input', this.value)
+        
+        this.content.computed_value_in_litres = null;
+        this.$emit('input', this.content)
       }
 
     }
   },
   watch: {
-    raw_unit() { this.updateValue() },
-    raw_number() { this.updateValue() }
+    'content.raw_unit':{immediate:true,handler() { this.updateValue() }},
+    'content.raw_number':{immediate:true,handler() { this.updateValue() }}
   },
-  template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="raw_number"></input><unit :title="unit_hint" type="vol" v-model="raw_unit" class="vol_unit"/></div>`
+  template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="content.raw_number"></input><unit :title="unit_hint" type="vol" v-model="content.raw_unit" class="vol_unit"/></div>`
 }
 );
 
 
 
-Vue.component('buffer_header', {
-  data: function () {
-    return {
-      count: 0
-    }
-  },
-  template: `<h4 contenteditable=true>Buffer title</h4>
-    `
-});
-
-
-
-
-
-
 var data = {
-  counter: 3,
-  uids: [],
-  model: '',
+  buffer_name:null,
+  times_permaclicked:0,
+  counter: 4,
+  reagents_store: [],
+  notes_store: [],
+   model: '',
   about_open: false,
   video_open:false,
-  chosen: '',
-  final_volume: null,
-
-  message: 'Hello Vue!',
+  final_volume: {raw_number:null,raw_unit:null,computed_value_in_litres:null},
 
   onDeleteMe(x) {
     console.log(this)
     console.log(x)
-
-    index = data.uids.indexOf(x);
-    if (index > -1) {
-      data.uids.splice(index, 1);
+    to_delete = -1;
+    for (i in data.reagents_store){
+        if(data.reagents_store[i].uid==x){
+          to_delete = i
+        }
+    }
+    console.log(to_delete)
+    if (to_delete > -1) {
+      data.reagents_store.splice(to_delete, 1);
+  
+    }
+  },
+  deleteNote(x) {
+    console.log(this)
+    console.log(x)
+    to_delete = -1;
+    for (i in data.notes_store){
+        if(data.notes_store[i].uid==x){
+          to_delete = i
+        }
+    }
+    console.log(to_delete)
+    if (to_delete > -1) {
+      data.notes_store.splice(to_delete, 1);
+  
     }
   }
 
+
+}
+
+async function loadNewData(){
+var urlParams = new URLSearchParams(window.location.search);
+recipe =   urlParams.get('recipe')
+console.log(recipe)
+if(!recipe){
+  return
 }
 
 
-var app = new Vue({
+const cityRef = db.collection('recipes').doc(recipe);
+const doc = await cityRef.get();
+if (!doc.exists) {
+  console.log('No such document!');
+  return
+} else {
+  
+}
+
+
+  new_data = JSON.parse(doc.data().json)
+  console.log(new_data)
+  
+
+
+if(new_data){
+
+  data['final_volume'] = new_data['final_volume']
+  data['reagents_store'] = new_data['reagents_store']
+  data['notes_store'] = new_data['notes_store']
+  data['buffer_name'] = new_data['buffer_name']
+}
+
+}
+
+var app;
+
+var test;
+
+async function startup(){
+  
+
+await loadNewData();
+
+app = new Vue({
   el: '#app',
   data: data,
   computed: {
     compoundTitle() {
-      if (this.final_volume == null) {
+      if (this.final_volume.computed_value_in_litres == null) {
         return "First, please enter a final volume above, with a unit"
       }
       else {
@@ -662,19 +709,41 @@ var app = new Vue({
   },
   methods: {
 
+   
 
-    simpleSuggestionList() {
-      return [
-        'Vue.js',
-        'React.js',
-        'Angular.js'
-      ]
-    },
+    
     AddCompound() {
       window.onbeforeunload = function () {
         return true;
       };
-      data.uids.push(data.counter);
+
+      var max_uid=0
+
+      for (i in data.reagents_store){
+        max_uid = Math.max(
+          data.reagents_store[i].uid, max_uid)
+    }
+
+      data.reagents_store.push(
+        {"uid":(max_uid+1),"info":{"desired_concentration":{"number":null,"type_per_litre":null,"raw_unit":null,"raw_number":null},"manual_mw":null,"reagent_info":{"name":null,"mw":null},"needed_amount":{"mass_unit":null,"chosen_input_method":"weight","vol_unit":"","stock_concentration":{"raw_unit":null,"raw_number":null,"number":null,"type_per_litre":null}}}}
+      
+        );
+      data.counter++;
+    },
+    AddNote() {
+      
+
+      var max_uid=0
+
+      for (i in data.notes_store){
+        max_uid = Math.max(
+          data.notes_store[i].uid, max_uid)
+    }
+
+      data.notes_store.push(
+        {"uid":(max_uid+1),text:'',hover:false}
+      
+        );
       data.counter++;
     }
 
@@ -682,3 +751,45 @@ var app = new Vue({
   }
 
 });
+
+$('.overlay').hide();
+}
+
+
+
+
+
+
+function makeid(length) {
+  var result           = '';
+  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var charactersLength = characters.length;
+  for ( var i = 0; i < length; i++ ) {
+     result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  }
+  return result;
+}
+
+
+
+var db = firebase.firestore();
+async function permalink(){
+
+    console.log('test')
+    to_store = {"notes_store":data.notes_store,"final_volume":data.final_volume, "buffer_name":data.buffer_name, "reagents_store":data.reagents_store};
+    json = JSON.stringify(to_store)
+    const data_for_db = {
+      json: json,
+      version:1
+    
+    };
+    
+    id = makeid(10);
+    // Add a new document in collection "cities" with ID 'LA'
+    const res =  await db.collection('recipes').doc(id).set(data_for_db) ;
+    window. onbeforeunload = null;
+    
+    console.log("/?recipe="+id);
+    window.location.replace("/?recipe="+id);
+    
+}
