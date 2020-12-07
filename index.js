@@ -776,10 +776,12 @@ var db = firebase.firestore();
 async function permalink(){
 
     console.log('test')
+    time = Date.now()
     to_store = {"notes_store":data.notes_store,"final_volume":data.final_volume, "buffer_name":data.buffer_name, "reagents_store":data.reagents_store};
     json = JSON.stringify(to_store)
     const data_for_db = {
       json: json,
+      time: time,
       version:1
     
     };
