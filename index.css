@@ -173,7 +173,8 @@ div.buttons_container {
 }
 
 ::placeholder {
-	color: blue;
+	color:#77f;
+	opacity:1
 }
 
 div.measuring_tape {
@@ -358,3 +359,5 @@ a.titler{text-decoration: none;}
   .note{width:90%;font-size:20px; border:0px;}
 
   .note_div{margin-top:5px;margin-bottom:5px;}
+
+  .highlight{color:#77f;}

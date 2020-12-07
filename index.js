@@ -141,7 +141,7 @@ console.log(concentrations);
 
 Vue.component('needed_amount', {
   props:
-    ['final_volume', 'mw', 'desired_concentration','value']
+    ['final_volume', 'mw', 'desired_concentration','value','vol_toggle_hint']
 
 
 
@@ -150,10 +150,12 @@ Vue.component('needed_amount', {
   data: function () {
     return {
       content:this.value,
+      vol_toggle_hint_internal:true
     }
   },
   methods: {
     toggleType() {
+      this.vol_toggle_hint_internal  = false ;
       if (this.desired_concentration_is_volumetric) {
         alert("Since your desired concentration is specified in volumetric units, you must measure out a volume.")
       }
@@ -172,6 +174,15 @@ Vue.component('needed_amount', {
 
   computed:
   {
+    vol_toggle_large_tooltip(){
+      if(this.vol_toggle_hint_internal & this.vol_toggle_hint){
+        return 'Press to toggle between measuring volume and mass';
+      }
+      else{
+        return ''
+      }
+    },
+
     input_method: function () {
       if (this.desired_concentration_is_volumetric) {
         return "volume"
@@ -289,7 +300,7 @@ Vue.component('needed_amount', {
  }
 },
   template: `<div style="display:inline-block" class="computed">
-  <div class="button_holder_flask"><i class="fas change-input-type-button toggler" :class="input_type_button_image" v-on:click="toggleType()" title="Toggle between measuring out mass and volume"></i></div>
+  <div class="button_holder_flask"><i class="fas change-input-type-button toggler" :class="[input_type_button_image,vol_toggle_hint_internal & vol_toggle_hint ? 'highlight': '']" v-tooltip="vol_toggle_large_tooltip" v-on:click="toggleType()" title="Toggle between measuring out mass and volume"></i></div>
   <div   style="display:inline-block" v-if="input_method=='weight'">
   <div class="needed_number" v-tooltip="needed_amount_mass[1]">{{needed_amount_mass[0]}}</div><unit key="mass" type="mass"  v-model="content.mass_unit"/>
   </div>
@@ -448,7 +459,7 @@ Vue.component('reagent', {
 
 
 Vue.component('reagent_line', {
-  props: ['uid', 'final_volume','value'],
+  props: ['uid', 'final_volume','value','vol_toggle_hint'],
   data: function () {
     return {
       content:this.value
@@ -517,7 +528,7 @@ Vue.component('reagent_line', {
           Are you sure you want to delete  {{displayName}}?
           <button  v-on:click="deleteMe()">Yes</button> <button v-on:click="unmodalise()">No</button>
         </modal>
-    <div><conc_and_unit v-model="content.desired_concentration"/><reagent @nameChange="content.manual_mw = null" :manual_mw="content.manual_mw" :uid="uid" v-model="content.reagent_info" /><needed_amount :mw="content.reagent_info.mw" :final_volume="final_volume" :desired_concentration="content.desired_concentration" v-model="content.needed_amount"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
+    <div><conc_and_unit v-model="content.desired_concentration"/><reagent @nameChange="content.manual_mw = null" :manual_mw="content.manual_mw" :uid="uid" v-model="content.reagent_info" /><needed_amount :vol_toggle_hint="vol_toggle_hint" :mw="content.reagent_info.mw" :final_volume="final_volume" :desired_concentration="content.desired_concentration" v-model="content.needed_amount"></needed_amount><div style="display:inline-block" class="buttons_container" >&nbsp;<div  v-if="hover"  class="buttons"><i  v-on:click="modalise_settings()" title="Set molecular weight" class="fas fa-cog weight-button"></i> &nbsp;<i title="Delete" class="fas fa-trash trash-button" v-on:click="modalise()"></i></div></div>
     </div>
 
     
