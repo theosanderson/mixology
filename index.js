@@ -607,7 +607,6 @@ Vue.component('vol_and_unit', {
 
 var data = {
   buffer_name:null,
-  times_permaclicked:0,
   counter: 4,
   reagents_store: [],
   notes_store: [],
@@ -792,6 +791,6 @@ async function permalink(){
     window. onbeforeunload = null;
     
     console.log("/?recipe="+id);
-    window.location.replace("/?recipe="+id);
+    window.location.href = "/?recipe="+id;
     
 }
