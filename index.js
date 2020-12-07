@@ -321,6 +321,22 @@ Vue.component('unit', {
     }
   },
   methods: {
+    
+      unitKeyDown: function (e) {
+       // console.log(e)
+        if(e.code== "Backspace"){
+          if(this.$refs.unit_input.inputElement.selectionEnd==0){
+            this.$emit('backspace_too_far','true')
+            e.preventDefault();
+          e.stopPropagation();
+          }
+          
+        }
+       
+  
+        
+    },
+
 
     filterFunction(a, b) {
       return a.toLowerCase().replace(" ", "").startsWith(b.toLowerCase().replace(" ", ""));
@@ -364,7 +380,8 @@ Vue.component('unit', {
       v-model="content" :class="{invalid_unit:invalid_unit}"
       :placeholder="type+' unit'"
       :list="list_of_units()"
-      :filter-by-query="true" class="unit_input">
+      :filter-by-query="true"  class="unit_input" ref="unit_input">
+      <input :placeholder="type+' unit'" type="search" autocomplete="off" v-model="content" v-on:keydown="unitKeyDown">
     </vue-simple-suggest>
       </div>`});
 
@@ -548,6 +565,35 @@ Vue.component('conc_and_unit', {
     }
   },
   methods: {
+    onbackspacetoofar(){
+      console.log('too far')
+
+      const starting = (""+this.content.raw_number);
+      //this.content.raw_number = starting.slice(0, -1); //delete last char but this seems confusing
+      this.$refs.number.focus()
+      this.$refs.number.type = 'text'
+      this.$refs.number.selectionStart = this.$refs.number.selectionEnd  =this.$refs.number.value.toString().length
+      this.$refs.number.type = 'number'
+
+    },
+
+    numberKeypress: function (e) {
+      // console.log(e)
+ var inp = String.fromCharCode(e.keyCode);
+ 
+ 
+       const isLetter=/[a-zA-Z\%]/.test(inp)
+       if(isLetter){
+         e.preventDefault();
+         
+      
+      console.log(this.$refs.unit.$refs.unit_input);
+      this.$refs.unit.content = inp;
+      this.$refs.unit.$refs.unit_input.value = inp;
+      this.$refs.unit.$refs.unit_input.$refs.inputSlot.firstChild.focus() ;
+       }
+     }
+  ,
     updateValue() {
     
 
@@ -575,7 +621,7 @@ Vue.component('conc_and_unit', {
     'value.raw_number': function() { this.updateValue() }
   },
 
-  template: `<div style="display:inline-block"><input type="number"  step="any" placeholder="conc." class="number" v-model="value.raw_number"></input><unit type="conc" v-model="value.raw_unit" /></div>`
+  template: `<div style="display:inline-block"><input ref="number" type="number" v-on:keypress="numberKeypress" step="any" placeholder="conc." class="number" v-model="value.raw_number"></input><unit @backspace_too_far="onbackspacetoofar" ref="unit" type="conc" v-model="value.raw_unit" /></div>`
 }
 );
 
@@ -588,7 +634,35 @@ Vue.component('vol_and_unit', {
   
     }
   },
+ 
   methods: {
+    onbackspacetoofar(){
+    console.log('too far')
+
+    const starting = (""+this.content.raw_number);
+    //this.content.raw_number = starting.slice(0, -1); //delete last char but this seems confusing
+    this.$refs.number.focus()
+    this.$refs.number.type = 'text'
+    this.$refs.number.selectionStart = this.$refs.number.selectionEnd  =this.$refs.number.value.toString().length
+    this.$refs.number.type = 'number'
+
+  },
+  numberKeypress: function (e) {
+    // console.log(e)
+var inp = String.fromCharCode(e.keyCode);
+
+
+     const isLetter=/[a-zA-Z\%]/.test(inp)
+     if(isLetter){
+       e.preventDefault();
+       
+    
+    console.log(this.$refs.unit.$refs.unit_input);
+    this.$refs.unit.content = inp;
+    this.$refs.unit.$refs.unit_input.value = inp;
+    this.$refs.unit.$refs.unit_input.$refs.inputSlot.firstChild.focus() ;
+     }
+   },
     updateValue() {
 
 
@@ -610,7 +684,7 @@ Vue.component('vol_and_unit', {
     'content.raw_unit':{immediate:true,handler() { this.updateValue() }},
     'content.raw_number':{immediate:true,handler() { this.updateValue() }}
   },
-  template: `<div style="display:inline-block"><input type="number" step="any" :title="num_hint" placeholder="vol." class="number" v-model="content.raw_number"></input><unit :title="unit_hint" type="vol" v-model="content.raw_unit" class="vol_unit"/></div>`
+  template: `<div style="display:inline-block"><input type="number" v-on:keypress="numberKeypress" step="any" :title="num_hint" placeholder="vol." class="number" v-model="content.raw_number"></input><unit @onbackspacetoofar="onbackspacetoofar" ref="unit" :title="unit_hint" type="vol" v-model="content.raw_unit" class="vol_unit"/></div>`
 }
 );
 
