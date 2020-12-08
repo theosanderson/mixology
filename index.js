@@ -88,7 +88,7 @@ for (const [mass_key, mass_value] of Object.entries(masses)) {
   }
 }
 
-concentrations["% (w/v)"] = { value: 1e-2, type_per_litre: "grams" }
+concentrations["% (w/v)"] = { value: 10, type_per_litre: "grams" }
 
 
 
