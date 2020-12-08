@@ -462,7 +462,7 @@ Vue.component('reagent', {
           :filter="filterFunction"
           :filter-by-query="true">
           <div class="mw" v-if="content.mw != null" :id="'mw_'+uid">(MW: {{content.mw}})</div>
-          <input v-model="content.name" autocomplete="off" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
+          <input  spellcheck="false" v-model="content.name" autocomplete="off" placeholder="reagent" type="search"  v-on:input="Update" :id="'input_'+uid"> 
           <div :id="'hidden_'+uid" style="width: auto;
           display: inline-block;
           visibility: hidden;
