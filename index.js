@@ -684,7 +684,7 @@ var inp = String.fromCharCode(e.keyCode);
     'content.raw_unit':{immediate:true,handler() { this.updateValue() }},
     'content.raw_number':{immediate:true,handler() { this.updateValue() }}
   },
-  template: `<div style="display:inline-block"><input type="number" v-on:keypress="numberKeypress" step="any" :title="num_hint" placeholder="vol." class="number" v-model="content.raw_number"></input><unit @onbackspacetoofar="onbackspacetoofar" ref="unit" :title="unit_hint" type="vol" v-model="content.raw_unit" class="vol_unit"/></div>`
+  template: `<div style="display:inline-block"><input type="number" v-on:keypress="numberKeypress" step="any" :title="num_hint" placeholder="vol." class="number" v-model="content.raw_number"></input><unit @backspacetoofar="onbackspacetoofar" ref="unit" :title="unit_hint" type="vol" v-model="content.raw_unit" class="vol_unit"/></div>`
 }
 );
 
