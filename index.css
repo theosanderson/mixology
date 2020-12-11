@@ -4,12 +4,19 @@ html, body {
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+Pro&display=swap');
-input {
+
+input{
+	border:1px solid rgba(255, 255, 255, 0.9);
 	display: inline;
 	background: transparent;
-	border: 0;
+	
 	font-size: 20px;
 }
+
+input:hover{
+	border:1px solid #ddd;
+}
+
 
 * {
 	font-family: 'Source Serif Pro', serif;
@@ -364,3 +371,6 @@ a.titler{text-decoration: none;}
 	color:#667EFF;
 	opacity:1
 }
+
+
+
