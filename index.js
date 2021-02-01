@@ -777,6 +777,8 @@ async function startup(){
 
 await loadNewData();
 
+document.getElementById('spinner').style.display="none"
+
 app = new Vue({
   el: '#app',
   data: data,
