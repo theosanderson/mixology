@@ -1,24 +1,51 @@
-﻿
+/*eslint no-unused-vars: "warn"*/
+import Vue from 'vue'
+import $ from 'jquery'
+import firebase from 'firebase/app';
+import 'firebase/auth';
+import 'firebase/firebase-firestore';
+import VueSimpleSuggest from 'vue-simple-suggest'
+import VTooltip from 'v-tooltip'
+Vue.use(VTooltip, {
+  defaultHtml: false,
+})
 
-Vue.use(window["vue-js-modal"].default);
 
-masses_data = Array();
-masses_keys = [];
-question_marks = '???'
-precision_level = 4;
+Vue.component('vue-simple-suggest', VueSimpleSuggest)
 
-mw_message = "Unable to calculate the required value: you need to add a molecular weight to this reagent to make this conversion. Either choose a reagent from the suggestion list or click on the cog icon.";
+
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAbcpPTlSV3YaY3WHVSIV_-G2IV-6kGzyE",
+    authDomain: "mixology-1b19e.firebaseapp.com",
+    projectId: "mixology-1b19e",
+    storageBucket: "mixology-1b19e.appspot.com",
+    messagingSenderId: "372110169446",
+    appId: "1:372110169446:web:c58d451c520df31b1aa4a7"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+
+import vmodal from 'vue-js-modal'
+Vue.use(vmodal)
+
+let masses_data = Array();
+let masses_keys = [];
+let question_marks = '???'
+let precision_level = 4;
+
+let mw_message = "Unable to calculate the required value: you need to add a molecular weight to this reagent to make this conversion. Either choose a reagent from the suggestion list or click on the cog icon.";
 
 $.getJSON("masses.json", function (data) {
   console.log(data);
   masses_data = data;
   masses_keys = Object.keys(data).sort(function (a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
-});
+  });
 
-  
+
   startup();
-  
+
 
 });
 
@@ -63,7 +90,7 @@ function run_thing(uid) {
   var elemDiv = document.getElementById("hidden_" + uid);
   var elemInput = document.getElementById("input_" + uid);
   elemDiv.innerText = elemInput.value;
-  x = elemDiv.clientWidth + 10;
+  let x = elemDiv.clientWidth + 10;
   var target = document.getElementById("mw_" + uid);
   if (target != null) {
     x = Math.min(x, 200)
@@ -71,13 +98,14 @@ function run_thing(uid) {
   }
 }
 
+window.run_thing = run_thing
 
 //////////
 
-masses = { "g": 1, "mg": 1e-3, "kg": 1e3, "ug": 1e-6, "ng": 1e-9 }
-volumes = { "l": 1, "ml": 1e-3, "ul": 1e-6, "nl": 1e-9, "litres": 1, "litre": 1, "liters": 1, "liter": 1 }
+let masses = { "g": 1, "mg": 1e-3, "kg": 1e3, "ug": 1e-6, "ng": 1e-9 }
+let volumes = { "l": 1, "ml": 1e-3, "ul": 1e-6, "nl": 1e-9, "litres": 1, "litre": 1, "liters": 1, "liter": 1 }
 
-concentrations = {};
+let concentrations = {};
 
 for (const [mass_key, mass_value] of Object.entries(masses)) {
   for (const [vol_key, vol_value] of Object.entries(volumes)) {
@@ -119,9 +147,9 @@ concentrations["% (v/v)"] = { value: 1e-2, type_per_litre: "litres" }
 concentrations["X"] = { value: 1, type_per_litre: "x" }
 
 
-sorted_masses = Object.keys(masses).sort();
-sorted_concentrations = Object.keys(concentrations).sort();
-sorted_volumes = Object.keys(volumes).sort();
+let sorted_masses = Object.keys(masses).sort();
+let sorted_concentrations = Object.keys(concentrations).sort();
+let sorted_volumes = Object.keys(volumes).sort();
 
 
 
@@ -141,27 +169,27 @@ console.log(concentrations);
 
 Vue.component('needed_amount', {
   props:
-    ['final_volume', 'mw', 'desired_concentration','value','vol_toggle_hint']
+    ['final_volume', 'mw', 'desired_concentration', 'value', 'vol_toggle_hint']
 
 
 
   ,
-  
+
   data: function () {
     return {
-      content:this.value,
-      vol_toggle_hint_internal:true
+      content: this.value,
+      vol_toggle_hint_internal: true
     }
   },
   methods: {
     toggleType() {
-      this.vol_toggle_hint_internal  = false ;
+      this.vol_toggle_hint_internal = false;
       if (this.desired_concentration_is_volumetric) {
         alert("Since your desired concentration is specified in volumetric units, you must measure out a volume.")
       }
       if (this.content.chosen_input_method == "weight") {
         this.content.chosen_input_method = "volume"
-       // this.content.vol_unit = ""
+        // this.content.vol_unit = ""
         //his.content.mass_unit = ""
       }
       else {
@@ -174,11 +202,11 @@ Vue.component('needed_amount', {
 
   computed:
   {
-    vol_toggle_large_tooltip(){
-      if(this.vol_toggle_hint_internal & this.vol_toggle_hint){
+    vol_toggle_large_tooltip() {
+      if (this.vol_toggle_hint_internal & this.vol_toggle_hint) {
         return 'Press to toggle between measuring volume and mass';
       }
-      else{
+      else {
         return ''
       }
     },
@@ -214,15 +242,15 @@ Vue.component('needed_amount', {
       }
       if (this.desired_concentration.type_per_litre == "grams") {
 
-        mass_unit_content = masses[this.content.mass_unit];
+        let mass_unit_content = masses[this.content.mass_unit];
 
-        val = this.final_volume * this.desired_concentration.number / mass_unit_content
+        let val = this.final_volume * this.desired_concentration.number / mass_unit_content
         return [formatNumber(precision_level, val), ""]
       }
       else if (this.mw > 0 & this.desired_concentration.type_per_litre == "moles") {
 
-        mass_unit_content = masses[this.content.mass_unit];
-        val = this.final_volume * this.desired_concentration.number * this.mw / mass_unit_content
+        let mass_unit_content = masses[this.content.mass_unit];
+        let val = this.final_volume * this.desired_concentration.number * this.mw / mass_unit_content
         return [formatNumber(precision_level, val), ""]
       }
       else {
@@ -251,9 +279,9 @@ Vue.component('needed_amount', {
 
 
       if (this.desired_concentration.type_per_litre == this.content.stock_concentration.type_per_litre) {
-        
-        vol_unit_content = volumes[this.content.vol_unit];
-        val = this.final_volume * this.desired_concentration.number / (this.content.stock_concentration.number * vol_unit_content);
+
+        let vol_unit_content = volumes[this.content.vol_unit];
+        let val = this.final_volume * this.desired_concentration.number / (this.content.stock_concentration.number * vol_unit_content);
         return [formatNumber(precision_level, val), ""]
 
       }
@@ -261,16 +289,16 @@ Vue.component('needed_amount', {
         if (!this.mw) {
           return [question_marks, mw_message]
         }
-        vol_unit_content = volumes[this.content.vol_unit];
-        val = this.final_volume * this.desired_concentration.number / (this.content.stock_concentration.number * vol_unit_content / this.mw);
+        let vol_unit_content = volumes[this.content.vol_unit];
+        let val = this.final_volume * this.desired_concentration.number / (this.content.stock_concentration.number * vol_unit_content / this.mw);
         return [formatNumber(precision_level, val), ""]
       }
       else if (this.desired_concentration.type_per_litre == "grams" & this.content.stock_concentration.type_per_litre == "moles") {
         if (!this.mw) {
           return [question_marks, mw_message]
         }
-        vol_unit_content = volumes[this.content.vol_unit];
-        val = this.final_volume * this.desired_concentration.number  / (this.content.stock_concentration.number * vol_unit_content* this.mw);
+        let vol_unit_content = volumes[this.content.vol_unit];
+        let val = this.final_volume * this.desired_concentration.number / (this.content.stock_concentration.number * vol_unit_content * this.mw);
         return [formatNumber(precision_level, val), ""]
       }
       else {
@@ -292,13 +320,14 @@ Vue.component('needed_amount', {
     }
 
   },
-  watch:{content: {
-    handler(val){
-     this.$emit('input', this.content)
-    },
-    deep: true
- }
-},
+  watch: {
+    content: {
+      handler(val) {
+        this.$emit('input', this.content)
+      },
+      deep: true
+    }
+  },
   template: `<div style="display:inline-block" class="computed">
   <div class="button_holder_flask"><i class="fas change-input-type-button toggler" :class="[input_type_button_image,vol_toggle_hint_internal & vol_toggle_hint ? 'highlight': '']" v-tooltip="vol_toggle_large_tooltip" v-on:click="toggleType()" title="Toggle between measuring out mass and volume"></i></div>
   <div   style="display:inline-block" v-if="input_method=='weight'">
@@ -312,29 +341,29 @@ Vue.component('needed_amount', {
 
 
 Vue.component('unit', {
-  props: ['value','type'],
+  props: ['value', 'type'],
   data: function () {
     return {
       content: this.value
-      
+
 
     }
   },
   methods: {
-    
-      unitKeyDown: function (e) {
-       // console.log(e)
-        if(e.code== "Backspace"){
-          if(this.$refs.unit_input.inputElement.selectionEnd==0){
-            this.$emit('backspace_too_far','true')
-            e.preventDefault();
+
+    unitKeyDown: function (e) {
+      // console.log(e)
+      if (e.code == "Backspace") {
+        if (this.$refs.unit_input.inputElement.selectionEnd == 0) {
+          this.$emit('backspace_too_far', 'true')
+          e.preventDefault();
           e.stopPropagation();
-          }
-          
         }
-       
-  
-        
+
+      }
+
+
+
     },
 
 
@@ -373,7 +402,7 @@ Vue.component('unit', {
 
 
     }
-    
+
   },
   template: `<div class="unit" style="display:inline-block">
       <vue-simple-suggest :filter="filterFunction"
@@ -389,13 +418,13 @@ Vue.component('unit', {
 
 
 Vue.component('reagent', {
-  props: ['uid','manual_mw','value'],
+  props: ['uid', 'manual_mw', 'value'],
 
   data: function () {
     return {
-      
-      content:this.value,
-      
+
+      content: this.value,
+
       masses_data: masses_data,
       reagentsList() { return masses_keys; },
       filterFunction(a, b) {
@@ -403,41 +432,46 @@ Vue.component('reagent', {
       }
     }
   },
-  
+
   watch: {
-    'content.name':{ immediate:false,handler() {
-      this.$emit('nameChange')
-      this.$emit('input', this.content)
-      console.log("name change")
-      this.UpdateMW()
-    }},
-    
-    'manual_mw':{ immediate:true,handler() {
-      
-      this.UpdateMW()
-    }},
-    'content.mw': { immediate:true,handler() {
-      console.log("mw_change", this.content.mw);
-      this.$emit('input', this.content)
-    
-    }
-},
-    
+    'content.name': {
+      immediate: false, handler() {
+        this.$emit('nameChange')
+        this.$emit('input', this.content)
+        console.log("name change")
+        this.UpdateMW()
+      }
+    },
+
+    'manual_mw': {
+      immediate: true, handler() {
+
+        this.UpdateMW()
+      }
+    },
+    'content.mw': {
+      immediate: true, handler() {
+        console.log("mw_change", this.content.mw);
+        this.$emit('input', this.content)
+
+      }
+    },
+
   },
   methods: {
-    UpdateMW(){
+    UpdateMW() {
       if (this.manual_mw != null) {
         this.content.mw = this.manual_mw;
       }
       else if (this.reagentsList().includes(this.content.name)) {
-        this.content.mw =  (masses_data[this.content.name]);
+        this.content.mw = (masses_data[this.content.name]);
       }
       else {
         console.log('setting to null')
         this.content.mw = null;
       }
       setTimeout("run_thing('" + this.uid + "')", 1)
-    
+
     },
 
 
@@ -476,17 +510,17 @@ Vue.component('reagent', {
 
 
 Vue.component('reagent_line', {
-  props: ['uid', 'final_volume','value','vol_toggle_hint'],
+  props: ['uid', 'final_volume', 'value', 'vol_toggle_hint'],
   data: function () {
     return {
-      content:this.value
-    
-    ,
-      
+      content: this.value
+
+      ,
+
       count: 0,
       hover: false,
-      
-      
+
+
 
 
       modalise() {
@@ -524,10 +558,10 @@ Vue.component('reagent_line', {
   },
   watch: {
     content: {
-       handler(val){
+      handler(val) {
         this.$emit('input', this.content)
-       },
-       deep: true
+      },
+      deep: true
     }
   },
 
@@ -559,50 +593,50 @@ Vue.component('conc_and_unit', {
   props: ['value'],
   data: function () {
     return {
-  //{ number: null, type_per_litre: null, raw_unit:null, raw_number:null }
+      //{ number: null, type_per_litre: null, raw_unit:null, raw_number:null }
 
       content: this.value
     }
   },
   methods: {
-    onbackspacetoofar(){
+    onbackspacetoofar() {
       console.log('too far')
 
-      const starting = (""+this.content.raw_number);
+      const starting = ("" + this.content.raw_number);
       //this.content.raw_number = starting.slice(0, -1); //delete last char but this seems confusing
       this.$refs.number.focus()
       this.$refs.number.type = 'text'
-      this.$refs.number.selectionStart = this.$refs.number.selectionEnd  =this.$refs.number.value.toString().length
+      this.$refs.number.selectionStart = this.$refs.number.selectionEnd = this.$refs.number.value.toString().length
       this.$refs.number.type = 'number'
 
     },
 
     numberKeypress: function (e) {
       // console.log(e)
- var inp = String.fromCharCode(e.keyCode);
- 
- 
-       const isLetter=/[a-zA-Z\%]/.test(inp)
-       if(isLetter){
-         e.preventDefault();
-         
-      
-      console.log(this.$refs.unit.$refs.unit_input);
-      this.$refs.unit.content = inp;
-      this.$refs.unit.$refs.unit_input.value = inp;
-      this.$refs.unit.$refs.unit_input.$refs.inputSlot.firstChild.focus() ;
-       }
-     }
-  ,
+      var inp = String.fromCharCode(e.keyCode);
+
+
+      const isLetter = /[a-zA-Z%]/.test(inp)
+      if (isLetter) {
+        e.preventDefault();
+
+
+        console.log(this.$refs.unit.$refs.unit_input);
+        this.$refs.unit.content = inp;
+        this.$refs.unit.$refs.unit_input.value = inp;
+        this.$refs.unit.$refs.unit_input.$refs.inputSlot.firstChild.focus();
+      }
+    }
+    ,
     updateValue() {
-    
+
 
 
       if (concentrations[this.value.raw_unit]) {
 
         this.value.type_per_litre = concentrations[this.value.raw_unit].type_per_litre
         this.value.number = this.value.raw_number * concentrations[this.value.raw_unit].value
-       
+
         this.$emit('input', this.value)
 
       }
@@ -617,8 +651,8 @@ Vue.component('conc_and_unit', {
     }
   },
   watch: {
-    'value.raw_unit': function() { this.updateValue() },
-    'value.raw_number': function() { this.updateValue() }
+    'value.raw_unit': function () { this.updateValue() },
+    'value.raw_number': function () { this.updateValue() }
   },
 
   template: `<div style="display:inline-block"><input ref="number" type="number" v-on:keypress="numberKeypress" step="any" placeholder="conc." class="number" v-model="value.raw_number"></input><unit @backspace_too_far="onbackspacetoofar" ref="unit" type="conc" v-model="value.raw_unit" /></div>`
@@ -627,53 +661,53 @@ Vue.component('conc_and_unit', {
 
 
 Vue.component('vol_and_unit', {
-  props: ["num_hint", "unit_hint",'value'],
+  props: ["num_hint", "unit_hint", 'value'],
   data: function () {
     return {
       content: this.value
-  
+
     }
   },
- 
+
   methods: {
-    onbackspacetoofar(){
-    console.log('too far')
+    onbackspacetoofar() {
+      console.log('too far')
 
-    const starting = (""+this.content.raw_number);
-    //this.content.raw_number = starting.slice(0, -1); //delete last char but this seems confusing
-    this.$refs.number.focus()
-    this.$refs.number.type = 'text'
-    this.$refs.number.selectionStart = this.$refs.number.selectionEnd  =this.$refs.number.value.toString().length
-    this.$refs.number.type = 'number'
+      const starting = ("" + this.content.raw_number);
+      //this.content.raw_number = starting.slice(0, -1); //delete last char but this seems confusing
+      this.$refs.number.focus()
+      this.$refs.number.type = 'text'
+      this.$refs.number.selectionStart = this.$refs.number.selectionEnd = this.$refs.number.value.toString().length
+      this.$refs.number.type = 'number'
 
-  },
-  numberKeypress: function (e) {
-    // console.log(e)
-var inp = String.fromCharCode(e.keyCode);
+    },
+    numberKeypress: function (e) {
+      // console.log(e)
+      var inp = String.fromCharCode(e.keyCode);
 
 
-     const isLetter=/[a-zA-Z\%]/.test(inp)
-     if(isLetter){
-       e.preventDefault();
-       
-    
-    console.log(this.$refs.unit.$refs.unit_input);
-    this.$refs.unit.content = inp;
-    this.$refs.unit.$refs.unit_input.value = inp;
-    this.$refs.unit.$refs.unit_input.$refs.inputSlot.firstChild.focus() ;
-     }
-   },
+      const isLetter = /[a-zA-Z%]/.test(inp)
+      if (isLetter) {
+        e.preventDefault();
+
+
+        console.log(this.$refs.unit.$refs.unit_input);
+        this.$refs.unit.content = inp;
+        this.$refs.unit.$refs.unit_input.value = inp;
+        this.$refs.unit.$refs.unit_input.$refs.inputSlot.firstChild.focus();
+      }
+    },
     updateValue() {
 
 
-      unit_details = volumes[this.content.raw_unit]
+      let unit_details = volumes[this.content.raw_unit]
       if (unit_details) {
         this.content.computed_value_in_litres = this.content.raw_number * volumes[this.content.raw_unit]
         this.$emit('input', this.content)
       }
       else {
 
-        
+
         this.content.computed_value_in_litres = null;
         this.$emit('input', this.content)
       }
@@ -681,8 +715,8 @@ var inp = String.fromCharCode(e.keyCode);
     }
   },
   watch: {
-    'content.raw_unit':{immediate:true,handler() { this.updateValue() }},
-    'content.raw_number':{immediate:true,handler() { this.updateValue() }}
+    'content.raw_unit': { immediate: true, handler() { this.updateValue() } },
+    'content.raw_number': { immediate: true, handler() { this.updateValue() } }
   },
   template: `<div style="display:inline-block"><input type="number" v-on:keypress="numberKeypress" step="any" :title="num_hint" placeholder="vol." class="number" v-model="content.raw_number"></input><unit @backspacetoofar="onbackspacetoofar" ref="unit" :title="unit_hint" type="vol" v-model="content.raw_unit" class="vol_unit"/></div>`
 }
@@ -691,80 +725,81 @@ var inp = String.fromCharCode(e.keyCode);
 
 
 var data = {
-  buffer_name:null,
+  buffer_name: null,
   counter: 4,
   reagents_store: [],
   notes_store: [],
-   model: '',
+  model: '',
   about_open: false,
-  video_open:false,
-  final_volume: {raw_number:null,raw_unit:null,computed_value_in_litres:null},
+  video_open: false,
+  final_volume: { raw_number: null, raw_unit: null, computed_value_in_litres: null },
 
   onDeleteMe(x) {
     console.log(this)
     console.log(x)
-    to_delete = -1;
-    for (i in data.reagents_store){
-        if(data.reagents_store[i].uid==x){
-          to_delete = i
-        }
+    let to_delete = -1;
+    for (let i in data.reagents_store) {
+      if (data.reagents_store[i].uid == x) {
+        to_delete = i
+      }
     }
     console.log(to_delete)
     if (to_delete > -1) {
       data.reagents_store.splice(to_delete, 1);
-  
+
     }
   },
   deleteNote(x) {
     console.log(this)
     console.log(x)
-    to_delete = -1;
-    for (i in data.notes_store){
-        if(data.notes_store[i].uid==x){
-          to_delete = i
-        }
+    let to_delete = -1;
+    for (let i in data.notes_store) {
+      if (data.notes_store[i].uid == x) {
+        to_delete = i
+      }
     }
     console.log(to_delete)
     if (to_delete > -1) {
       data.notes_store.splice(to_delete, 1);
-  
+
     }
   }
 
 
 }
 
-async function loadNewData(){
-var urlParams = new URLSearchParams(window.location.search);
-recipe =   urlParams.get('recipe')
-console.log(recipe)
-if(!recipe){
-  return
-}
+async function loadNewData() {
+  var urlParams = new URLSearchParams(window.location.search);
+  let recipe = urlParams.get('recipe')
+  console.log(recipe)
+  if (!recipe) {
+    return
+  }
 
 
-const cityRef = db.collection('recipes').doc(recipe);
-const doc = await cityRef.get();
-if (!doc.exists) {
-  console.log('No such document!');
-  return
-} else {
-  
-}
+  const cityRef = db.collection('recipes').doc(recipe);
+  const doc = await cityRef.get();
+  if (!doc.exists) {
+    console.log('No such document!');
+    return
+  } else {
+    console.log("good")
+
+  }
 
 
-  new_data = JSON.parse(doc.data().json)
+  let new_data = JSON.parse(doc.data().json)
   console.log(new_data)
-  
 
 
-if(new_data){
 
-  data['final_volume'] = new_data['final_volume']
-  data['reagents_store'] = new_data['reagents_store']
-  data['notes_store'] = new_data['notes_store']
-  data['buffer_name'] = new_data['buffer_name']
-}
+  if (new_data) {
+
+    data['final_volume'] = new_data['final_volume']
+    data['reagents_store'] = new_data['reagents_store']
+    data['notes_store'] = new_data['notes_store']
+    data['buffer_name'] = new_data['buffer_name']
+  }
 
 }
 
@@ -772,73 +807,73 @@ var app;
 
 var test;
 
-async function startup(){
-  
+async function startup() {
 
-await loadNewData();
 
-document.getElementById('spinner').style.display="none"
+  await loadNewData();
 
-app = new Vue({
-  el: '#app',
-  data: data,
-  computed: {
-    compoundTitle() {
-      if (this.final_volume.computed_value_in_litres == null) {
-        return "First, please enter a final volume above, with a unit"
+  document.getElementById('spinner').style.display = "none"
+
+  app = new Vue({
+    el: '#app',
+    data: data,
+    computed: {
+      compoundTitle() {
+        if (this.final_volume.computed_value_in_litres == null) {
+          return "First, please enter a final volume above, with a unit"
+        }
+        else {
+          return ""
+        }
+
       }
-      else {
-        return ""
-      }
-
-    }
-  },
-  methods: {
-
-   
-
-    
-    AddCompound() {
-      window.onbeforeunload = function () {
-        return true;
-      };
-
-      var max_uid=0
-
-      for (i in data.reagents_store){
-        max_uid = Math.max(
-          data.reagents_store[i].uid, max_uid)
-    }
-
-      data.reagents_store.push(
-        {"uid":(max_uid+1),"info":{"desired_concentration":{"number":null,"type_per_litre":null,"raw_unit":null,"raw_number":null},"manual_mw":null,"reagent_info":{"name":null,"mw":null},"needed_amount":{"mass_unit":null,"chosen_input_method":"weight","vol_unit":"","stock_concentration":{"raw_unit":null,"raw_number":null,"number":null,"type_per_litre":null}}}}
-      
-        );
-      data.counter++;
     },
-    AddNote() {
-      
+    methods: {
 
-      var max_uid=0
 
-      for (i in data.notes_store){
-        max_uid = Math.max(
-          data.notes_store[i].uid, max_uid)
-    }
 
-      data.notes_store.push(
-        {"uid":(max_uid+1),text:'',hover:false}
-      
+
+      AddCompound() {
+        window.onbeforeunload = function () {
+          return true;
+        };
+
+        var max_uid = 0
+
+        for (let i in data.reagents_store) {
+          max_uid = Math.max(
+            data.reagents_store[i].uid, max_uid)
+        }
+
+        data.reagents_store.push(
+          { "uid": (max_uid + 1), "info": { "desired_concentration": { "number": null, "type_per_litre": null, "raw_unit": null, "raw_number": null }, "manual_mw": null, "reagent_info": { "name": null, "mw": null }, "needed_amount": { "mass_unit": null, "chosen_input_method": "weight", "vol_unit": "", "stock_concentration": { "raw_unit": null, "raw_number": null, "number": null, "type_per_litre": null } } } }
+
         );
-      data.counter++;
+        data.counter++;
+      },
+      AddNote() {
+
+
+        var max_uid = 0
+
+        for (let i in data.notes_store) {
+          max_uid = Math.max(
+            data.notes_store[i].uid, max_uid)
+        }
+
+        data.notes_store.push(
+          { "uid": (max_uid + 1), text: '', hover: false }
+
+        );
+        data.counter++;
+      }
+
+
     }
 
+  });
 
-  }
-
-});
-
-$('.overlay').hide();
+  $('.overlay').hide();
 }
 
 
@@ -847,11 +882,11 @@ $('.overlay').hide();
 
 
 function makeid(length) {
-  var result           = '';
-  var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  var result = '';
+  var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   var charactersLength = characters.length;
-  for ( var i = 0; i < length; i++ ) {
-     result += characters.charAt(Math.floor(Math.random() * charactersLength));
+  for (var i = 0; i < length; i++) {
+    result += characters.charAt(Math.floor(Math.random() * charactersLength));
   }
   return result;
 }
@@ -859,25 +894,27 @@ function makeid(length) {
 
 
 var db = firebase.firestore();
-async function permalink(){
+async function permalink() {
 
-    console.log('test')
-    time = Date.now()
-    to_store = {"notes_store":data.notes_store,"final_volume":data.final_volume, "buffer_name":data.buffer_name, "reagents_store":data.reagents_store};
-    json = JSON.stringify(to_store)
-    const data_for_db = {
-      json: json,
-      time: time,
-      version:1
-    
-    };
-    
-    id = makeid(10);
-    // Add a new document in collection "cities" with ID 'LA'
-    const res =  await db.collection('recipes').doc(id).set(data_for_db) ;
-    window. onbeforeunload = null;
-    
-    console.log("/?recipe="+id);
-    window.location.href = "/?recipe="+id;
-    
+  console.log('test')
+  let time = Date.now()
+  let to_store = { "notes_store": data.notes_store, "final_volume": data.final_volume, "buffer_name": data.buffer_name, "reagents_store": data.reagents_store };
+  let json = JSON.stringify(to_store)
+  const data_for_db = {
+    json: json,
+    time: time,
+    version: 1
+
+  };
+
+  let id = makeid(10);
+  // Add a new document in collection "cities" with ID 'LA'
+  const res = await db.collection('recipes').doc(id).set(data_for_db);
+  window.onbeforeunload = null;
+
+  console.log("/?recipe=" + id);
+  window.location.href = "/?recipe=" + id;
+
 }
+
+window.permalink = permalink
