@@ -8,3 +8,8 @@ It's made with VueJS. There are some R files here used to process the ChEBI data
 
 Please raise an issue if you find any bugs.
 
+## Development
+```
+yarn install
+yarn serve
+```
