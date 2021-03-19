@@ -13,3 +13,5 @@ Please raise an issue if you find any bugs.
 yarn install
 yarn serve
 ```
+
+Code DOI: [![DOI](https://zenodo.org/badge/317638636.svg)](https://zenodo.org/badge/latestdoi/317638636)
