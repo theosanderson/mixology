@@ -39,7 +39,6 @@ let masses_data = Array();
 let masses_keys = [];
 
 $.getJSON("masses.json", function (data) {
-  console.log(data);
   masses_data = data;
   masses_keys = Object.keys(data).sort(function (a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
@@ -130,7 +129,6 @@ grams, litres, moles, x , activity_units
 */
 
 
-console.log(concentrations);
 
 Vue.component('unit', {
   props: ['value', 'type'],
@@ -144,7 +142,7 @@ Vue.component('unit', {
   methods: {
 
     unitKeyDown: function (e) {
-      // console.log(e)
+
       if (e.code == "Backspace") {
         if (this.$refs.unit_input.inputElement.selectionEnd == 0) {
           this.$emit('backspace_too_far', 'true')
@@ -230,7 +228,7 @@ Vue.component('reagent', {
       immediate: false, handler() {
         this.$emit('nameChange')
         this.$emit('input', this.content)
-        console.log("name change")
+
         this.UpdateMW()
       }
     },
@@ -243,7 +241,7 @@ Vue.component('reagent', {
     },
     'content.mw': {
       immediate: true, handler() {
-        console.log("mw_change", this.content.mw);
+
         this.$emit('input', this.content)
 
       }
@@ -259,7 +257,7 @@ Vue.component('reagent', {
         this.content.mw = (masses_data[this.content.name]);
       }
       else {
-        console.log('setting to null')
+
         this.content.mw = null;
       }
       setTimeout("run_thing('" + this.uid + "')", 1)
@@ -316,23 +314,23 @@ Vue.component('reagent_line', {
 
 
       modalise() {
-        console.log(this);
+
         this.$modal.show('trash_modal_' + this.uid);
       },
       unmodalise() {
-        console.log(this);
+
         this.$modal.hide('trash_modal_' + this.uid);
       },
       modalise_settings() {
-        console.log(this);
+
         this.$modal.show('settings_modal_' + this.uid);
       },
       unmodalise_settings() {
-        console.log(this);
+
         this.$modal.hide('settings_modal_' + this.uid);
       },
       deleteMe() {
-        console.log("delete me", this.uid);
+
         this.$emit('deleteme', this.uid)
 
       }
@@ -392,7 +390,7 @@ Vue.component('conc_and_unit', {
   },
   methods: {
     onbackspacetoofar() {
-      console.log('too far')
+
 
       const starting = ("" + this.content.raw_number);
       //this.content.raw_number = starting.slice(0, -1); //delete last char but this seems confusing
@@ -404,7 +402,7 @@ Vue.component('conc_and_unit', {
     },
 
     numberKeypress: function (e) {
-      // console.log(e)
+
       var inp = String.fromCharCode(e.keyCode);
 
 
@@ -413,7 +411,7 @@ Vue.component('conc_and_unit', {
         e.preventDefault();
 
 
-        console.log(this.$refs.unit.$refs.unit_input);
+
         this.$refs.unit.content = inp;
         this.$refs.unit.$refs.unit_input.value = inp;
         this.$refs.unit.$refs.unit_input.$refs.inputSlot.firstChild.focus();
@@ -434,7 +432,6 @@ Vue.component('conc_and_unit', {
       }
       else {
 
-        console.log("invalid_unit")
         this.value.number = null;
         this.value.type_per_litre = null;
         this.$emit('input', this.value);
@@ -463,7 +460,7 @@ Vue.component('vol_and_unit', {
 
   methods: {
     onbackspacetoofar() {
-      console.log('too far')
+
 
       const starting = ("" + this.content.raw_number);
       //this.content.raw_number = starting.slice(0, -1); //delete last char but this seems confusing
@@ -474,16 +471,13 @@ Vue.component('vol_and_unit', {
 
     },
     numberKeypress: function (e) {
-      // console.log(e)
+
       var inp = String.fromCharCode(e.keyCode);
 
 
       const isLetter = /[a-zA-Z%]/.test(inp)
       if (isLetter) {
         e.preventDefault();
-
-
-        console.log(this.$refs.unit.$refs.unit_input);
         this.$refs.unit.content = inp;
         this.$refs.unit.$refs.unit_input.value = inp;
         this.$refs.unit.$refs.unit_input.$refs.inputSlot.firstChild.focus();
@@ -527,30 +521,28 @@ var data = {
   final_volume: { raw_number: null, raw_unit: null, computed_value_in_litres: null },
 
   onDeleteMe(x) {
-    console.log(this)
-    console.log(x)
+
     let to_delete = -1;
     for (let i in data.reagents_store) {
       if (data.reagents_store[i].uid == x) {
         to_delete = i
       }
     }
-    console.log(to_delete)
+
     if (to_delete > -1) {
       data.reagents_store.splice(to_delete, 1);
 
     }
   },
   deleteNote(x) {
-    console.log(this)
-    console.log(x)
+
     let to_delete = -1;
     for (let i in data.notes_store) {
       if (data.notes_store[i].uid == x) {
         to_delete = i
       }
     }
-    console.log(to_delete)
+
     if (to_delete > -1) {
       data.notes_store.splice(to_delete, 1);
 
@@ -563,7 +555,6 @@ var data = {
 async function loadNewData() {
   var urlParams = new URLSearchParams(window.location.search);
   let recipe = urlParams.get('recipe')
-  console.log(recipe)
   if (!recipe) {
     return
   }
@@ -575,13 +566,13 @@ async function loadNewData() {
     console.log('No such document!');
     return
   } else {
-    console.log("good")
+    console.log("Loaded")
 
   }
 
 
   let new_data = JSON.parse(doc.data().json)
-  console.log(new_data)
+
 
 
 
@@ -682,7 +673,6 @@ function makeid(length) {
 var db = firebase.firestore();
 async function permalink() {
 
-  console.log('test')
   let time = Date.now()
   let to_store = { "notes_store": data.notes_store, "final_volume": data.final_volume, "buffer_name": data.buffer_name, "reagents_store": data.reagents_store };
   let json = JSON.stringify(to_store)
@@ -697,7 +687,6 @@ async function permalink() {
   const res = await db.collection('recipes').doc(id).set(data_for_db);
   window.onbeforeunload = null;
 
-  console.log("/?recipe=" + id);
   window.location.href = "/?recipe=" + id;
 
 }
