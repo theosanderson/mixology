@@ -7,7 +7,7 @@ import 'firebase/firebase-firestore';
 import VueSimpleSuggest from 'vue-simple-suggest'
 import VTooltip from 'v-tooltip'
 
-import {masses,volumes} from './masses_volumes.js'
+import { masses, volumes } from './masses_volumes.js'
 Vue.use(VTooltip, {
   defaultHtml: false,
 })
@@ -20,17 +20,17 @@ Vue.component('needed_amount', NeededAmount)
 
 
 
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyAbcpPTlSV3YaY3WHVSIV_-G2IV-6kGzyE",
-    authDomain: "mixology-1b19e.firebaseapp.com",
-    projectId: "mixology-1b19e",
-    storageBucket: "mixology-1b19e.appspot.com",
-    messagingSenderId: "372110169446",
-    appId: "1:372110169446:web:c58d451c520df31b1aa4a7"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
+// Your web app's Firebase configuration
+var firebaseConfig = {
+  apiKey: "AIzaSyAbcpPTlSV3YaY3WHVSIV_-G2IV-6kGzyE",
+  authDomain: "mixology-1b19e.firebaseapp.com",
+  projectId: "mixology-1b19e",
+  storageBucket: "mixology-1b19e.appspot.com",
+  messagingSenderId: "372110169446",
+  appId: "1:372110169446:web:c58d451c520df31b1aa4a7"
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
 
 import vmodal from 'vue-js-modal'
 Vue.use(vmodal)
@@ -131,13 +131,6 @@ grams, litres, moles, x , activity_units
 
 
 console.log(concentrations);
-
-
-
-
-
-
-
 
 Vue.component('unit', {
   props: ['value', 'type'],
@@ -676,10 +669,6 @@ async function startup() {
 }
 
 
-
-
-
-
 function makeid(length) {
   var result = '';
   var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -689,8 +678,6 @@ function makeid(length) {
   }
   return result;
 }
-
-
 
 var db = firebase.firestore();
 async function permalink() {
@@ -707,7 +694,6 @@ async function permalink() {
   };
 
   let id = makeid(10);
-  // Add a new document in collection "cities" with ID 'LA'
   const res = await db.collection('recipes').doc(id).set(data_for_db);
   window.onbeforeunload = null;
 
